@@ -18,13 +18,15 @@ locals {
   }
 }
 
-# module "vnet" {
-#   source         = "./module/VNET"
-#   for_each       = local.vnet_list
-#   name           = each.key
-#   location       = each.value.location
-#   subnets        = each.value.subnets
-#   address_space  = each.value.address_space
-#   resource_group = each.value.resource_group
-#   tags           = each.value.tags
-# }
+module "vnet" {
+  source         = "./module/VNET"
+  for_each       = local.vnet_list
+  name           = each.key
+  location       = each.value.location
+  subnets        = each.value.subnets
+  address_space  = each.value.address_space
+  resource_group = each.value.resource_group
+  tags           = each.value.tags
+
+  depends_on = [module.RG]
+}

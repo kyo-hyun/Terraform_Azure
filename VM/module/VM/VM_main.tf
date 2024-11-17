@@ -38,10 +38,14 @@ resource "azurerm_virtual_machine" "main" {
     admin_password = var.os_profile.pw
   }
 
-  os_profile_windows_config {
-    provision_vm_agent        = true
-    enable_automatic_upgrades = false
+  os_profile_linux_config {
+    disable_password_authentication = false
   }
+  
+  # os_profile_windows_config {
+  #   provision_vm_agent        = true
+  #   enable_automatic_upgrades = false
+  # }
 
   tags = var.tags
 }
