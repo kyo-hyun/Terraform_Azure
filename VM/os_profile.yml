@@ -1,7 +1,7 @@
 profile :
   nckr :
-    id   : "khkim"
+    id   : "test-monitering"
     pw   : "QWERasdf123!!"
   m4kr :
-    id   : "khkim" 
-    pw   : "QWERasdf123!!"
+    id   : "test-monitering" 
+    pw   : "QWERasdf123!!!"

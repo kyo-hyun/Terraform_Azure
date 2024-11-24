@@ -38,6 +38,10 @@ variable "os_profile" {
     default = null
 }
 
+variable "data_disk" {
+    default = null
+}
+
 variable "tags" {
     default = null
 }
