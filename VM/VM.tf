@@ -24,6 +24,7 @@ locals {
         vnet            = "terraform_vnet"
         subnet          = "sub1"
         ip_address      = "10.0.1.24"
+        public_ip       = "pip-khkim-windows"
 
         size            = "Standard_B1ls"
         OsType          = "windows"
@@ -49,6 +50,7 @@ locals {
       vnet              = "terraform_vnet"
       subnet            = "sub1"
       ip_address        = "10.0.1.25"
+      public_ip         = "pip-khkim-ubuntu"
 
       size              = "Standard_B1ls"
       OsType            = "ubuntu"
@@ -81,6 +83,7 @@ module "azure_vm" {
   sku         = each.value.OsImage
   subnet      = module.vnet[each.value.vnet].get_subnet_id[each.value.subnet]
   ip_address  = each.value.ip_address
+  public_ip   = module.pip[each.value.public_ip].get_pip_id
   size        = each.value.size
   os_profile  = local.os_profile.profile[each.value.subscription]
   data_disk   = each.value.data_disk

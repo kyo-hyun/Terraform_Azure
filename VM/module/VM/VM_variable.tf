@@ -34,6 +34,10 @@ variable "size" {
     default = null
 }
 
+variable "public_ip" {
+    default = null
+}
+
 variable "os_profile" {
     default = null
 }
