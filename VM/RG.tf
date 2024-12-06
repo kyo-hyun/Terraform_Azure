@@ -1,6 +1,6 @@
 locals {
   rg_list = {
-    "khkim_test" = {
+    "RG-rygus-terraform" = {
       location = "koreacentral"
     }
   }

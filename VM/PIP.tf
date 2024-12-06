@@ -1,15 +1,7 @@
 locals {
     pip_list = {
-        "pip-khkim-windows" = {
-            rg          = "khkim_test"
-            location    = "koreacentral"
-            tags = {
-                owner   = "김교현"
-            }
-        }
-
         "pip-khkim-ubuntu" = {
-            rg          = "khkim_test"
+            rg          = "RG-rygus-terraform"
             location    = "koreacentral"
             tags = {
                 owner   = "김교현"
@@ -25,4 +17,6 @@ module "pip" {
     rg       = each.value.rg
     location = each.value.location
     tags     = each.value.tags
+
+    depends_on = [module.RG]
 }

@@ -34,6 +34,14 @@ variable "size" {
     default = null
 }
 
+variable "nsg_id" {
+    default = null
+}
+
+variable "os_disk_type" {
+    default = null
+}
+
 variable "public_ip" {
     default = null
 }

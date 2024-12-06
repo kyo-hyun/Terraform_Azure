@@ -8,7 +8,7 @@ locals {
 }
 
 # Network Interface
-resource "azurerm_network_interface" "main" {
+resource "azurerm_network_interface" "nic" {
   name                = "NIC-${var.name}"
   location            = var.location
   resource_group_name = var.rg
@@ -32,7 +32,7 @@ resource "azurerm_windows_virtual_machine" "vm_windows" {
   size                      = var.size
   admin_username            = var.os_profile.id
   admin_password            = var.os_profile.pw
-  network_interface_ids     = [azurerm_network_interface.main.id]
+  network_interface_ids     = [azurerm_network_interface.nic.id]
 
   enable_automatic_updates  = false
   patch_mode                = "Manual"
@@ -63,13 +63,13 @@ resource "azurerm_linux_virtual_machine" "vm_linux" {
   size                            = var.size
   admin_username                  = var.os_profile.id
   admin_password                  = var.os_profile.pw
-  network_interface_ids           = [azurerm_network_interface.main.id]
+  network_interface_ids           = [azurerm_network_interface.nic.id]
   disable_password_authentication = false
 
   os_disk {
     name                    = "OSDISK-${var.name}"
     caching                 = "ReadWrite"
-    storage_account_type    = "Standard_LRS"
+    storage_account_type    = var.os_disk_type
   }
 
   source_image_reference {
@@ -88,7 +88,7 @@ resource "azurerm_managed_disk" "data_disk" {
   name                  = "Datadisk${each.key}-${var.name}"
   location              = var.location
   resource_group_name   = var.rg
-  storage_account_type  = "Standard_LRS"
+  storage_account_type  = each.value.type
   create_option         = "Empty"
   disk_size_gb          = each.value.size
 }
@@ -101,3 +101,34 @@ resource "azurerm_virtual_machine_data_disk_attachment" "example" {
   lun                   = each.key
   caching               = "ReadOnly"
 }
+
+# attach nsg
+resource "azurerm_network_interface_security_group_association" "example" {
+  network_interface_id      = azurerm_network_interface.nic.id
+  network_security_group_id = var.nsg_id
+}
+
+/*
+# Custom Script Extension 추가
+resource "azurerm_virtual_machine_extension" "example" {
+  name                 = "CustomScript"
+  virtual_machine_id   = local.vm_id.id
+  publisher            = "Microsoft.Azure.Extensions"
+  type                 = "CustomScript"
+  type_handler_version = "2.0"
+
+  settings = <<SETTINGS
+  {
+    "fileUris": ["https://wemadetest.blob.core.windows.net/gscglscript/ubuntu_post_script.sh"],
+    "commandToExecute": "bash ubuntu_post_script.sh"
+  }
+  SETTINGS
+
+  protected_settings = <<PROTECTED_SETTINGS
+  {
+    "storageAccountName": "wemadetest",
+    "storageAccountKey": "fVVb5/VDKZcHl+LZVuZziONRW2mIbBD5yupvh04Sv0t9GZGHFVGdwGL+s987ATC20EmGefcoXRLp+ASt1a8iqw=="
+  }
+  PROTECTED_SETTINGS
+}
+*/
