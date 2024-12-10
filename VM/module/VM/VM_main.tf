@@ -107,28 +107,3 @@ resource "azurerm_network_interface_security_group_association" "example" {
   network_interface_id      = azurerm_network_interface.nic.id
   network_security_group_id = var.nsg_id
 }
-
-/*
-# Custom Script Extension 추가
-resource "azurerm_virtual_machine_extension" "example" {
-  name                 = "CustomScript"
-  virtual_machine_id   = local.vm_id.id
-  publisher            = "Microsoft.Azure.Extensions"
-  type                 = "CustomScript"
-  type_handler_version = "2.0"
-
-  settings = <<SETTINGS
-  {
-    "fileUris": ["https://wemadetest.blob.core.windows.net/gscglscript/ubuntu_post_script.sh"],
-    "commandToExecute": "bash ubuntu_post_script.sh"
-  }
-  SETTINGS
-
-  protected_settings = <<PROTECTED_SETTINGS
-  {
-    "storageAccountName": "wemadetest",
-    "storageAccountKey": "fVVb5/VDKZcHl+LZVuZziONRW2mIbBD5yupvh04Sv0t9GZGHFVGdwGL+s987ATC20EmGefcoXRLp+ASt1a8iqw=="
-  }
-  PROTECTED_SETTINGS
-}
-*/
