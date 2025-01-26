@@ -34,6 +34,14 @@ variable "size" {
     default = null
 }
 
+variable "storage_account" {
+    default = null
+}
+
+variable "storage_account_rg" {
+    default = null
+}
+
 variable "nsg_id" {
     default = null
 }

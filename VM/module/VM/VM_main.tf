@@ -1,10 +1,16 @@
 # locals
 locals {
   vm_id = var.Os_Type == "windows" ? {
-    id                            = azurerm_windows_virtual_machine.vm_windows[0].id
+    id = azurerm_windows_virtual_machine.vm_windows[0].id
     } : {
-    id                            = azurerm_linux_virtual_machine.vm_linux[0].id
+    id = azurerm_linux_virtual_machine.vm_linux[0].id
   }
+}
+
+# get storage account 
+data "azurerm_storage_account" "example" {
+  name                = var.storage_account
+  resource_group_name = var.storage_account_rg
 }
 
 # Network Interface
@@ -33,9 +39,14 @@ resource "azurerm_windows_virtual_machine" "vm_windows" {
   admin_username            = var.os_profile.id
   admin_password            = var.os_profile.pw
   network_interface_ids     = [azurerm_network_interface.nic.id]
+  timezone                  = "Korea Standard Time"
 
   enable_automatic_updates  = false
   patch_mode                = "Manual"
+
+  boot_diagnostics {
+      storage_account_uri = data.azurerm_storage_account.example.primary_blob_endpoint
+  }
 
   os_disk {
     name                    = "OSDISK-${var.name}"
@@ -65,6 +76,10 @@ resource "azurerm_linux_virtual_machine" "vm_linux" {
   admin_password                  = var.os_profile.pw
   network_interface_ids           = [azurerm_network_interface.nic.id]
   disable_password_authentication = false
+
+  boot_diagnostics {
+      storage_account_uri = data.azurerm_storage_account.example.primary_blob_endpoint
+  }
 
   os_disk {
     name                    = "OSDISK-${var.name}"
@@ -107,3 +122,29 @@ resource "azurerm_network_interface_security_group_association" "example" {
   network_interface_id      = azurerm_network_interface.nic.id
   network_security_group_id = var.nsg_id
 }
+
+/*
+# cse
+resource "azurerm_virtual_machine_extension" "example" {
+  name                 = "custom-script-extension"
+  virtual_machine_id   = local.vm_id.id
+  publisher            = "Microsoft.Compute"
+  type                 = "CustomScriptExtension"
+  type_handler_version = "1.10"
+
+  settings = <<SETTINGS
+  {
+    "fileUris": ["https://rygussa.blob.core.windows.net/script/windows.ps1?"],
+    "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File windows.ps1"
+  }
+SETTINGS
+
+  protected_settings = <<PROTECTED_SETTINGS
+    {
+      "storageAccountName": "rygussa",
+      "storageAccountKey": "Nj4h8TwOfCaHGPB4nN9kv8kbnyq9j/a8zKXHuvGeuWu7boYnz9qzjLY//iGHmPTuhhxIjJdVEBd2+AStS3MOdw=="
+    }
+  PROTECTED_SETTINGS
+
+}
+*/
