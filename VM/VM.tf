@@ -23,11 +23,11 @@ locals {
         vnet                = "terraform_vnet"
         subnet              = "sub1"
         ip_address          = "10.0.1.24"
-        public_ip           = "pip-khkim-windows"
+        public_ip           = null
         nsg_id              = "NSG-rygus-test"
         storage_account     = "rygussa"
         storage_account_rg  = "rygus-sa-rg"
-        size                = "Standard_F4s_v2"
+        size                = "Standard_B1ls"
         os_disk_type        = "Standard_LRS"
         OsType              = "windows"
         OsImage             = "2019-datacenter"
@@ -45,37 +45,37 @@ locals {
         }
     }
 
-    #  "khkim-Ubuntu" = {
+     "khkim-Ubuntu" = {
 
-    #     subscription        = "nckr"
-    #     rg                  = "RG-rygus-terraform"
-    #     location            = "koreacentral"
-    #     vnet                = "terraform_vnet"
-    #     subnet              = "sub1"
-    #     ip_address          = "10.0.1.25"
-    #     public_ip           = "pip-khkim-ubuntu"
-    #     nsg_id              = "NSG-rygus-test"
-    #     storage_account     = "rygussa"
-    #     storage_account_rg  = "rygus-sa-rg"
+        subscription        = "nckr"
+        rg                  = "RG-rygus-terraform"
+        location            = "koreacentral"
+        vnet                = "terraform_vnet"
+        subnet              = "sub1"
+        ip_address          = "10.0.1.25"
+        public_ip           = "pip-khkim-ubuntu"
+        nsg_id              = "NSG-rygus-test"
+        storage_account     = "rygussa"
+        storage_account_rg  = "rygus-sa-rg"
 
-    #     size                = "Standard_B1ls"
-    #     os_disk_type        = "Standard_LRS"
-    #     OsType              = "ubuntu"
-    #     OsImage             = "22_04-lts"
+        size                = "Standard_B1ls"
+        os_disk_type        = "Standard_LRS"
+        OsType              = "ubuntu"
+        OsImage             = "22_04-lts"
 
-    #     data_disk           = {
-    #       0 = {
-    #         size            = 10
-    #         type            = "Standard_LRS"
-    #       }
+        data_disk           = {
+          0 = {
+            size            = 10
+            type            = "Standard_LRS"
+          }
 
-    #     }
+        }
 
-    #    tags = {
-    #      owner = "김교현",
-    #      env   = "Terraform"
-    #    }
-    #  }
+       tags = {
+         owner = "김교현",
+         env   = "Terraform"
+       }
+     }
 
   }
 }
@@ -91,7 +91,7 @@ module "azure_vm" {
   sku                 = each.value.OsImage
   subnet              = module.vnet[each.value.vnet].get_subnet_id[each.value.subnet]
   ip_address          = each.value.ip_address
-  public_ip           = module.pip[each.value.public_ip].get_pip_id
+  public_ip           = try(module.pip[each.value.public_ip].get_pip_id,null)
   nsg_id              = module.NSG[each.value.nsg_id].get_nsg_id
   storage_account     = each.value.storage_account
   storage_account_rg  = each.value.storage_account_rg     

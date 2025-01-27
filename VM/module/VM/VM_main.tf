@@ -24,7 +24,7 @@ resource "azurerm_network_interface" "nic" {
     subnet_id                     = var.subnet
     private_ip_address_allocation = "Static"
     private_ip_address            = var.ip_address
-    public_ip_address_id          = var.public_ip
+    public_ip_address_id          = var.public_ip == null ? null : var.public_ip
   }
 }
 
