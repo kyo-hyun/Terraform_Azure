@@ -17,6 +17,7 @@ locals {
   vm_list = {
 
     "khkim-Windows" = {
+
         subscription        = "nckr"
         rg                  = "RG-rygus-terraform"
         location            = "koreacentral"
@@ -27,6 +28,7 @@ locals {
         nsg_id              = "NSG-rygus-test"
         storage_account     = "rygussa"
         storage_account_rg  = "rygus-sa-rg"
+
         size                = "Standard_B1ls"
         os_disk_type        = "Standard_LRS"
         OsType              = "windows"
@@ -43,6 +45,7 @@ locals {
             owner = "김교현",
             env   = "windows"
         }
+
     }
 
      "khkim-Ubuntu" = {
@@ -75,7 +78,36 @@ locals {
          owner = "김교현",
          env   = "Terraform"
        }
+       
      }
+
+    "khkim-replica" = {
+        subscription        = "nckr"
+        rg                  = "RG-rygus-terraform"
+        location            = "koreacentral"
+        vnet                = "terraform_vnet"
+        subnet              = "sub1"
+        ip_address          = "10.0.1.27"
+        public_ip           = "pip-khkim-replica"
+        nsg_id              = "NSG-rygus-test"
+        storage_account     = "rygussa"
+        storage_account_rg  = "rygus-sa-rg"
+
+        size                = "Standard_B1ls"
+
+        OsType              = "Windows"
+        source_os_sanpshot  = "osdisk-test"
+        os_disk_type        = "Standard_LRS"
+
+        data_disk           = {
+
+        }
+
+       tags = {
+         owner = "김교현",
+         env   = "replica"
+       }
+    }
 
   }
 }
@@ -87,8 +119,8 @@ module "azure_vm" {
   rg                  = each.value.rg
   location            = each.value.location
   Os_Type             = each.value.OsType
-  os_image            = local.image_map[each.value.OsType][each.value.OsImage]
-  sku                 = each.value.OsImage
+  os_image            = try(local.image_map[each.value.OsType][each.value.OsImage],null)
+  sku                 = try(each.value.OsImage,null)
   subnet              = module.vnet[each.value.vnet].get_subnet_id[each.value.subnet]
   ip_address          = each.value.ip_address
   public_ip           = try(module.pip[each.value.public_ip].get_pip_id,null)
@@ -97,6 +129,7 @@ module "azure_vm" {
   storage_account_rg  = each.value.storage_account_rg     
   size                = each.value.size
   os_disk_type        = each.value.os_disk_type
+  source_os_snapshot  = try(each.value.source_os_sanpshot,null)
   os_profile          = local.os_profile.profile[each.value.subscription]
   data_disk           = each.value.data_disk
   tags                = each.value.tags

@@ -1,10 +1,12 @@
 # locals
 locals {
-  vm_id = var.Os_Type == "windows" ? {
+  vm_id = var.Os_Type == "windows" && var.source_os_snapshot == null ? {
     id = azurerm_windows_virtual_machine.vm_windows[0].id
-    } : {
+    } : var.Os_Type != "windows" && var.source_os_snapshot == null ? {
     id = azurerm_linux_virtual_machine.vm_linux[0].id
-  }
+    } : {
+    id = azurerm_virtual_machine.replica_vm[0].id
+    }
 }
 
 # get storage account 
@@ -30,7 +32,7 @@ resource "azurerm_network_interface" "nic" {
 
 # Winodws VM
 resource "azurerm_windows_virtual_machine" "vm_windows" {
-  count                     = var.Os_Type == "windows" ? 1:0
+  count                     = var.Os_Type == "windows" && var.source_os_snapshot == null ? 1:0
 
   name                      = "${var.name}"
   resource_group_name       = var.rg
@@ -66,7 +68,7 @@ resource "azurerm_windows_virtual_machine" "vm_windows" {
 
 # Linux VM
 resource "azurerm_linux_virtual_machine" "vm_linux" {
-  count                           = var.Os_Type != "windows" ? 1:0
+  count                           = var.Os_Type != "windows" && var.source_os_snapshot == null? 1:0
 
   name                            = "${var.name}"
   resource_group_name             = var.rg
@@ -97,6 +99,48 @@ resource "azurerm_linux_virtual_machine" "vm_linux" {
   tags = var.tags
 }
 
+# data로 snapshot 불러오기
+data "azurerm_snapshot" "os_disk_snapshot" {
+  count               = var.source_os_snapshot != null ? 1 : 0
+  name                = var.source_os_snapshot
+  resource_group_name = "Test-FW-RG"
+}
+
+# replica osdisk 생성
+resource "azurerm_managed_disk" "replica_os_disk" {
+  count                 = var.source_os_snapshot != null ? 1 : 0
+  name                 = "OSDISK-${var.name}"
+  location             = var.location
+  resource_group_name  = var.rg
+  storage_account_type = var.os_disk_type
+  create_option        = "Copy"
+  source_resource_id   = data.azurerm_snapshot.os_disk_snapshot[0].id
+}
+
+# replica vm
+resource "azurerm_virtual_machine" "replica_vm" {
+  count                 = var.source_os_snapshot != null ? 1 : 0
+
+  name                  = "${var.name}"
+  location              = var.location
+  resource_group_name   = var.rg
+  network_interface_ids = [azurerm_network_interface.nic.id]
+  vm_size               = var.size
+
+  delete_os_disk_on_termination = false
+  delete_data_disks_on_termination = false
+
+  storage_os_disk {
+    name              = "OSDISK-${var.name}"
+    caching           = "ReadWrite"
+    create_option     = "Attach"
+    managed_disk_id   = azurerm_managed_disk.replica_os_disk[0].id
+    os_type           = var.Os_Type
+  }
+
+  tags = var.tags
+}
+
 # data disk 
 resource "azurerm_managed_disk" "data_disk" {
   for_each              = var.data_disk
@@ -122,29 +166,3 @@ resource "azurerm_network_interface_security_group_association" "example" {
   network_interface_id      = azurerm_network_interface.nic.id
   network_security_group_id = var.nsg_id
 }
-
-/*
-# cse
-resource "azurerm_virtual_machine_extension" "example" {
-  name                 = "custom-script-extension"
-  virtual_machine_id   = local.vm_id.id
-  publisher            = "Microsoft.Compute"
-  type                 = "CustomScriptExtension"
-  type_handler_version = "1.10"
-
-  settings = <<SETTINGS
-  {
-    "fileUris": ["https://rygussa.blob.core.windows.net/script/windows.ps1?"],
-    "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File windows.ps1"
-  }
-SETTINGS
-
-  protected_settings = <<PROTECTED_SETTINGS
-    {
-      "storageAccountName": "rygussa",
-      "storageAccountKey": "Nj4h8TwOfCaHGPB4nN9kv8kbnyq9j/a8zKXHuvGeuWu7boYnz9qzjLY//iGHmPTuhhxIjJdVEBd2+AStS3MOdw=="
-    }
-  PROTECTED_SETTINGS
-
-}
-*/

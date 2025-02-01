@@ -50,6 +50,10 @@ variable "os_disk_type" {
     default = null
 }
 
+variable "source_os_snapshot" {
+    default = null
+}
+
 variable "public_ip" {
     default = null
 }

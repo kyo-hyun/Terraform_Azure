@@ -7,7 +7,7 @@ locals {
         owner = "김교현"
       }
     }
-    "pip-khkim-windows" = {
+    "pip-khkim-replica" = {
       rg       = "RG-rygus-terraform"
       location = "koreacentral"
       tags = {
