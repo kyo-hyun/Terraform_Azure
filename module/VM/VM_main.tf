@@ -99,7 +99,7 @@ resource "azurerm_linux_virtual_machine" "vm_linux" {
   tags = var.tags
 }
 
-# data로 snapshot 불러오기
+# data로 osdisk snapshot 불러오기
 data "azurerm_snapshot" "os_disk_snapshot" {
   count               = var.source_os_snapshot != null ? 1 : 0
   name                = var.source_os_snapshot

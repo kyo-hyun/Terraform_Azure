@@ -24,12 +24,12 @@ locals {
         vnet                = "terraform_vnet"
         subnet              = "sub1"
         ip_address          = "10.0.1.24"
-        public_ip           = null
-        nsg_id              = "NSG-rygus-test"
+        public_ip           = "pip-khkim-replica"
+        nsg_id              = "NSG1"
         storage_account     = "rygussa"
         storage_account_rg  = "rygus-sa-rg"
 
-        size                = "Standard_B1ls"
+        size                = "Standard_F2s_v2"
         os_disk_type        = "Standard_LRS"
         OsType              = "windows"
         OsImage             = "2019-datacenter"
@@ -48,66 +48,66 @@ locals {
 
     }
 
-     "khkim-Ubuntu" = {
+    #  "khkim-Ubuntu" = {
 
-        subscription        = "nckr"
-        rg                  = "RG-rygus-terraform"
-        location            = "koreacentral"
-        vnet                = "terraform_vnet"
-        subnet              = "sub1"
-        ip_address          = "10.0.1.25"
-        public_ip           = "pip-khkim-ubuntu"
-        nsg_id              = "NSG-rygus-test"
-        storage_account     = "rygussa"
-        storage_account_rg  = "rygus-sa-rg"
+    #     subscription        = "nckr"
+    #     rg                  = "RG-rygus-terraform"
+    #     location            = "koreacentral"
+    #     vnet                = "terraform_vnet"
+    #     subnet              = "sub1"
+    #     ip_address          = "10.0.1.25"
+    #     public_ip           = "pip-khkim-ubuntu"
+    #     nsg_id              = "NSG2"
+    #     storage_account     = "rygussa"
+    #     storage_account_rg  = "rygus-sa-rg"
 
-        size                = "Standard_B1ls"
-        os_disk_type        = "Standard_LRS"
-        OsType              = "ubuntu"
-        OsImage             = "22_04-lts"
+    #     size                = "Standard_B1ls"
+    #     os_disk_type        = "Standard_LRS"
+    #     OsType              = "ubuntu"
+    #     OsImage             = "22_04-lts"
 
-        data_disk           = {
-          0 = {
-            size            = 10
-            type            = "Standard_LRS"
-          }
+    #     data_disk           = {
+    #       0 = {
+    #         size            = 10
+    #         type            = "Standard_LRS"
+    #       }
 
-        }
+    #     }
 
-       tags = {
-         owner = "김교현",
-         env   = "Terraform"
-       }
+    #    tags = {
+    #      owner = "김교현",
+    #      env   = "Terraform"
+    #    }
        
-     }
+    #  }
 
-    "khkim-replica" = {
-        subscription        = "nckr"
-        rg                  = "RG-rygus-terraform"
-        location            = "koreacentral"
-        vnet                = "terraform_vnet"
-        subnet              = "sub1"
-        ip_address          = "10.0.1.27"
-        public_ip           = "pip-khkim-replica"
-        nsg_id              = "NSG-rygus-test"
-        storage_account     = "rygussa"
-        storage_account_rg  = "rygus-sa-rg"
+    # "khkim-replica" = {
+    #     subscription        = "nckr"
+    #     rg                  = "RG-rygus-terraform"
+    #     location            = "koreacentral"
+    #     vnet                = "terraform_vnet"
+    #     subnet              = "sub1"
+    #     ip_address          = "10.0.1.27"
+    #     public_ip           = "pip-khkim-replica"
+    #     nsg_id              = "NSG1"
+    #     storage_account     = "rygussa"
+    #     storage_account_rg  = "rygus-sa-rg"
 
-        size                = "Standard_B1ls"
+    #     size                = "Standard_B1ls"
 
-        OsType              = "Windows"
-        source_os_sanpshot  = "osdisk-test"
-        os_disk_type        = "Standard_LRS"
+    #     OsType              = "Windows"
+    #     source_os_sanpshot  = "osdisk-test"
+    #     os_disk_type        = "Standard_LRS"
 
-        data_disk           = {
+    #     data_disk           = {
 
-        }
+    #     }
 
-       tags = {
-         owner = "김교현",
-         env   = "replica"
-       }
-    }
+    #    tags = {
+    #      owner = "김교현",
+    #      env   = "replica"
+    #    }
+    # }
 
   }
 }
