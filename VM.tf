@@ -16,101 +16,107 @@ locals {
 
   vm_list = {
 
-    "khkim-Windows" = {
+    # Windows VM
+    # "khkim-Windows" = {
 
+    #     subscription        = "nckr"
+    #     rg                  = "RG-rygus-terraform"
+    #     location            = "koreacentral"
+    #     vnet                = "terraform_vnet"
+    #     subnet              = "sub1"
+    #     ip_address          = "10.0.1.24"
+    #     public_ip           = "pip-khkim-replica"
+    #     nsg_id              = "NSG1"
+    #     storage_account     = "rygussa"
+    #     storage_account_rg  = "rygus-sa-rg"
+
+    #     size                = "Standard_F2s_v2"
+    #     os_disk_type        = "Standard_LRS"
+    #     OsType              = "windows"
+    #     OsImage             = "2019-datacenter"
+
+    #     data_disk           = {
+    #       0 = {
+    #         size            = 128
+    #         type            = "Standard_LRS"
+    #       }
+    #     }
+
+    #     tags = {
+    #         owner = "김교현",
+    #         env   = "windows"
+    #     }
+
+    # }
+
+    # Linux VM
+    # "khkim-Ubuntu" = {
+    #    subscription        = "nckr"
+    #    rg                  = "RG-rygus-terraform"
+    #    location            = "koreacentral"
+    #    vnet                = "terraform_vnet"
+    #    subnet              = "sub1"
+    #    ip_address          = "10.0.1.25"
+    #    public_ip           = "pip-khkim-ubuntu"
+    #    nsg_id              = "NSG2"
+    #    storage_account     = "rygussa"
+    #    storage_account_rg  = "rygus-sa-rg"
+
+    #    size                = "Standard_B1ls"
+    #    os_disk_type        = "Standard_LRS"
+    #    OsType              = "ubuntu"
+    #    OsImage             = "22_04-lts"
+
+    #    data_disk           = {
+    #      1 = {
+    #        size            = 20
+    #        type            = "Standard_LRS"
+    #      }
+    #      0 = {
+    #        size            = 64
+    #        type            = "Standard_LRS"
+    #      }
+    #    }
+
+    #    tags = {
+    #      owner = "김교현",
+    #      env   = "Terraform"
+    #    }
+      
+    # }
+
+    # Replica VM
+    "khkim-replica" = {
         subscription        = "nckr"
         rg                  = "RG-rygus-terraform"
         location            = "koreacentral"
         vnet                = "terraform_vnet"
         subnet              = "sub1"
-        ip_address          = "10.0.1.24"
+        ip_address          = "10.0.1.27"
         public_ip           = "pip-khkim-replica"
         nsg_id              = "NSG1"
         storage_account     = "rygussa"
         storage_account_rg  = "rygus-sa-rg"
 
         size                = "Standard_F2s_v2"
+
+        OsType              = "Windows"
+        source_os_sanpshot  = "/subscriptions/8cc8d4c2-ebea-4dc9-8bd5-25592746f014/resourceGroups/RG-rygus-terraform/providers/Microsoft.Compute/snapshots/osdisk-snapshot"
         os_disk_type        = "Standard_LRS"
-        OsType              = "windows"
-        OsImage             = "2019-datacenter"
 
         data_disk           = {
-          0 = {
-            size            = 128
-            type            = "Standard_LRS"
-          }
+          
         }
 
-        tags = {
-            owner = "김교현",
-            env   = "windows"
-        }
-
+       tags = {
+         owner = "김교현",
+         env   = "replica"
+       }
     }
-
-    #  "khkim-Ubuntu" = {
-
-    #     subscription        = "nckr"
-    #     rg                  = "RG-rygus-terraform"
-    #     location            = "koreacentral"
-    #     vnet                = "terraform_vnet"
-    #     subnet              = "sub1"
-    #     ip_address          = "10.0.1.25"
-    #     public_ip           = "pip-khkim-ubuntu"
-    #     nsg_id              = "NSG2"
-    #     storage_account     = "rygussa"
-    #     storage_account_rg  = "rygus-sa-rg"
-
-    #     size                = "Standard_B1ls"
-    #     os_disk_type        = "Standard_LRS"
-    #     OsType              = "ubuntu"
-    #     OsImage             = "22_04-lts"
-
-    #     data_disk           = {
-    #       0 = {
-    #         size            = 10
-    #         type            = "Standard_LRS"
-    #       }
-
-    #     }
-
-    #    tags = {
-    #      owner = "김교현",
-    #      env   = "Terraform"
-    #    }
-       
-    #  }
-
-    # "khkim-replica" = {
-    #     subscription        = "nckr"
-    #     rg                  = "RG-rygus-terraform"
-    #     location            = "koreacentral"
-    #     vnet                = "terraform_vnet"
-    #     subnet              = "sub1"
-    #     ip_address          = "10.0.1.27"
-    #     public_ip           = "pip-khkim-replica"
-    #     nsg_id              = "NSG1"
-    #     storage_account     = "rygussa"
-    #     storage_account_rg  = "rygus-sa-rg"
-
-    #     size                = "Standard_B1ls"
-
-    #     OsType              = "Windows"
-    #     source_os_sanpshot  = "osdisk-test"
-    #     os_disk_type        = "Standard_LRS"
-
-    #     data_disk           = {
-
-    #     }
-
-    #    tags = {
-    #      owner = "김교현",
-    #      env   = "replica"
-    #    }
-    # }
 
   }
 }
+
 
 module "azure_vm" {
   source              = "./module/VM"
