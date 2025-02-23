@@ -17,7 +17,6 @@ locals {
     }
 }
 
-## Test
 locals {
   # windows vm
   vm_info = var.Os_Type == "windows" && var.source_os_snapshot == null ? { for key,data_disk in var.data_disk : key => {
@@ -51,9 +50,11 @@ data "azurerm_storage_account" "example" {
 
 # Network Interface
 resource "azurerm_network_interface" "nic" {
-  name                = "NIC-${var.name}"
-  location            = var.location
-  resource_group_name = var.rg
+  name                            = "NIC-${var.name}"
+  location                        = var.location
+  resource_group_name             = var.rg
+  # 네트워크 가속화 기능
+  accelerated_networking_enabled  = true
 
   ip_configuration {
     name                          = "Ipconfiguration-${var.name}"
@@ -141,6 +142,8 @@ resource "azurerm_managed_disk" "replica_os_disk" {
   resource_group_name  = var.rg
   storage_account_type = var.os_disk_type
   create_option        = "Copy"
+  hyper_v_generation   = "V1"
+  os_type              = var.Os_Type
   source_resource_id   = var.source_os_snapshot
 }
 

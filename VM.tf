@@ -27,8 +27,8 @@ locals {
     #     ip_address          = "10.0.1.24"
     #     public_ip           = "pip-khkim-replica"
     #     nsg_id              = "NSG1"
-    #     storage_account     = "rygussa"
-    #     storage_account_rg  = "rygus-sa-rg"
+    #     storage_account     = "wemadestorageaccount"
+    #     storage_account_rg  = "wemade-rg"
 
     #     size                = "Standard_F2s_v2"
     #     os_disk_type        = "Standard_LRS"
@@ -36,7 +36,7 @@ locals {
     #     OsImage             = "2019-datacenter"
 
     #     data_disk           = {
-    #       0 = {
+    #       1 = {
     #         size            = 128
     #         type            = "Standard_LRS"
     #       }
@@ -50,32 +50,28 @@ locals {
     # }
 
     # Linux VM
-    # "khkim-Ubuntu" = {
+    # "khkim-1" = {
     #    subscription        = "nckr"
     #    rg                  = "RG-rygus-terraform"
     #    location            = "koreacentral"
     #    vnet                = "terraform_vnet"
     #    subnet              = "sub1"
     #    ip_address          = "10.0.1.25"
-    #    public_ip           = "pip-khkim-ubuntu"
+    #    public_ip           = null
     #    nsg_id              = "NSG2"
-    #    storage_account     = "rygussa"
-    #    storage_account_rg  = "rygus-sa-rg"
+    #    storage_account     = "wemadestorageaccount"
+    #    storage_account_rg  = "wemade-rg"
 
-    #    size                = "Standard_B1ls"
+    #    size                = "Standard_F4s_v2"
     #    os_disk_type        = "Standard_LRS"
     #    OsType              = "ubuntu"
     #    OsImage             = "22_04-lts"
 
     #    data_disk           = {
-    #      1 = {
-    #        size            = 20
-    #        type            = "Standard_LRS"
-    #      }
-    #      0 = {
-    #        size            = 64
-    #        type            = "Standard_LRS"
-    #      }
+    #       1 = {
+    #         size            = 8
+    #         type            = "Standard_LRS"
+    #       }
     #    }
 
     #    tags = {
@@ -85,7 +81,35 @@ locals {
       
     # }
 
-    # Replica VM
+    # "khkim-2" = {
+    #    subscription        = "nckr"
+    #    rg                  = "RG-rygus-terraform"
+    #    location            = "koreacentral"
+    #    vnet                = "terraform_vnet"
+    #    subnet              = "sub2"
+    #    ip_address          = "10.0.2.27"
+    #    public_ip           = null
+    #    nsg_id              = "NSG2"
+    #    storage_account     = "wemadestorageaccount"
+    #    storage_account_rg  = "wemade-rg"
+
+    #    size                = "Standard_F4s_v2"
+    #    os_disk_type        = "Standard_LRS"
+    #    OsType              = "ubuntu"
+    #    OsImage             = "22_04-lts"
+
+    #    data_disk           = {
+
+    #    }
+
+    #    tags = {
+    #      owner = "김교현",
+    #      env   = "Terraform"
+    #    }
+      
+    # }
+
+    #Replica VM
     "khkim-replica" = {
         subscription        = "nckr"
         rg                  = "RG-rygus-terraform"
@@ -95,13 +119,13 @@ locals {
         ip_address          = "10.0.1.27"
         public_ip           = "pip-khkim-replica"
         nsg_id              = "NSG1"
-        storage_account     = "rygussa"
-        storage_account_rg  = "rygus-sa-rg"
+        storage_account     = "wemadestorageaccount"
+        storage_account_rg  = "wemade-rg"
 
         size                = "Standard_F2s_v2"
 
-        OsType              = "Windows"
-        source_os_sanpshot  = "/subscriptions/8cc8d4c2-ebea-4dc9-8bd5-25592746f014/resourceGroups/RG-rygus-terraform/providers/Microsoft.Compute/snapshots/osdisk-snapshot"
+        OsType              = "Linux"
+        source_os_sanpshot  = "/subscriptions/122a2e7e-7d1a-4b2d-a26c-0a156dfa583c/resourceGroups/RG-rygus-terraform/providers/Microsoft.Compute/snapshots/OSDISK-rygus-snap"
         os_disk_type        = "Standard_LRS"
 
         data_disk           = {

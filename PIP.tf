@@ -7,7 +7,8 @@ locals {
         owner = "김교현"
       }
     }
-    "pip-khkim-replica" = {
+    
+    "PIP-NAT" = {
       rg       = "RG-rygus-terraform"
       location = "koreacentral"
       tags = {
