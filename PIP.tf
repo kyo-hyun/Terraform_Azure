@@ -1,20 +1,13 @@
 locals {
   pip_list = {
-    "pip-khkim-ubuntu" = {
+    "PIP-KHKIM-MS" = {
       rg       = "RG-rygus-terraform"
       location = "koreacentral"
       tags = {
         owner = "김교현"
       }
     }
-    
-    "PIP-NAT" = {
-      rg       = "RG-rygus-terraform"
-      location = "koreacentral"
-      tags = {
-        owner = "김교현"
-      }
-    }
+  
   }
 }
 

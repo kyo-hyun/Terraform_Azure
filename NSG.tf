@@ -1,6 +1,6 @@
 locals {
   NSG_list = {
-    "NSG1" = {
+    "NSG-khkim" = {
       resource_group = "RG-rygus-terraform"
       location       = "koreacentral"
       nsg_rule = {
@@ -11,7 +11,7 @@ locals {
           protocol                   = "Tcp"
           source_port_range          = "*"
           destination_port_range     = "3389"
-          source_address_prefixes    = ["221.138.43.21", "1.235.222.130"]
+          source_address_prefixes    = ["211.117.84.44", "1.235.222.130"]
           destination_address_prefix = "*"
         }
 
@@ -22,38 +22,7 @@ locals {
           protocol                   = "Tcp"
           source_port_range          = "*"
           destination_port_range     = "22"
-          source_address_prefixes    = ["221.138.43.21", "1.235.222.130"]
-          destination_address_prefix = "*"
-        }
-      }
-      tags = {
-        owner = "김교현"
-      }
-    }
-
-    "NSG2" = {
-      resource_group = "RG-rygus-terraform"
-      location       = "koreacentral"
-      nsg_rule = {
-        "allow-rdp" = {
-          priority                   = 100
-          direction                  = "Inbound"
-          access                     = "Allow"
-          protocol                   = "Tcp"
-          source_port_range          = "*"
-          destination_port_range     = "3306"
-          source_address_prefixes    = ["0.0.0.0/0"]
-          destination_address_prefix = "*"
-        }
-
-        "allow-ssh" = {
-          priority                   = 200
-          direction                  = "Inbound"
-          access                     = "Allow"
-          protocol                   = "Tcp"
-          source_port_range          = "*"
-          destination_port_range     = "22"
-          source_address_prefixes    = ["0.0.0.0/0"]
+          source_address_prefixes    = ["211.117.84.44", "1.235.222.130"]
           destination_address_prefix = "*"
         }
       }

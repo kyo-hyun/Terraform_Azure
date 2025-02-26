@@ -109,34 +109,115 @@ locals {
       
     # }
 
-    #Replica VM
-    "khkim-replica" = {
-        subscription        = "nckr"
-        rg                  = "RG-rygus-terraform"
-        location            = "koreacentral"
-        vnet                = "terraform_vnet"
-        subnet              = "sub1"
-        ip_address          = "10.0.1.27"
-        public_ip           = "pip-khkim-replica"
-        nsg_id              = "NSG1"
-        storage_account     = "wemadestorageaccount"
-        storage_account_rg  = "wemade-rg"
+    # #Replica VM
+    # "khkim-replica" = {
+    #     subscription        = "nckr"
+    #     rg                  = "RG-rygus-terraform"
+    #     location            = "koreacentral"
+    #     vnet                = "terraform_vnet"
+    #     subnet              = "sub1"
+    #     ip_address          = "10.0.1.27"
+    #     public_ip           = "pip-khkim-replica"
+    #     nsg_id              = "NSG1"
+    #     storage_account     = "wemadestorageaccount"
+    #     storage_account_rg  = "wemade-rg"
 
-        size                = "Standard_F2s_v2"
+    #     size                = "Standard_F2s_v2"
 
-        OsType              = "Linux"
-        source_os_sanpshot  = "/subscriptions/122a2e7e-7d1a-4b2d-a26c-0a156dfa583c/resourceGroups/RG-rygus-terraform/providers/Microsoft.Compute/snapshots/OSDISK-rygus-snap"
-        os_disk_type        = "Standard_LRS"
+    #     OsType              = "Linux"
+    #     source_os_sanpshot  = "/subscriptions/122a2e7e-7d1a-4b2d-a26c-0a156dfa583c/resourceGroups/RG-rygus-terraform/providers/Microsoft.Compute/snapshots/OSDISK-rygus-snap"
+    #     os_disk_type        = "Standard_LRS"
 
-        data_disk           = {
+    #     data_disk           = {
           
-        }
+    #     }
 
-       tags = {
-         owner = "김교현",
-         env   = "replica"
-       }
-    }
+    #    tags = {
+    #      owner = "김교현",
+    #      env   = "replica"
+    #    }
+    # }
+
+    # "khkim-ms" = {
+    #    subscription        = "nckr"
+    #    rg                  = "RG-rygus-terraform"
+    #    location            = "koreacentral"
+    #    vnet                = "terraform_vnet"
+    #    subnet              = "sub2"
+    #    ip_address          = "10.0.2.25"
+    #    public_ip           = "PIP-KHKIM-MS"
+    #    nsg_id              = "NSG-khkim"
+    #    storage_account     = "wemadestorageaccount"
+    #    storage_account_rg  = "wemade-rg"
+
+    #    size                = "Standard_F2s_v2"
+    #    os_disk_type        = "Standard_LRS"
+    #    OsType              = "ubuntu"
+    #    OsImage             = "22_04-lts"
+
+    #    data_disk           = {
+
+    #    }
+
+    #    tags = {
+    #      owner = "김교현"
+    #    }
+      
+    # }
+
+    # "khkim-work1" = {
+    #    subscription        = "nckr"
+    #    rg                  = "RG-rygus-terraform"
+    #    location            = "koreacentral"
+    #    vnet                = "terraform_vnet"
+    #    subnet              = "sub2"
+    #    ip_address          = "10.0.2.26"
+    #    public_ip           = null
+    #    nsg_id              = "NSG-khkim"
+    #    storage_account     = "wemadestorageaccount"
+    #    storage_account_rg  = "wemade-rg"
+
+    #    size                = "Standard_F2s_v2"
+    #    os_disk_type        = "Standard_LRS"
+    #    OsType              = "ubuntu"
+    #    OsImage             = "22_04-lts"
+
+    #    data_disk           = {
+
+    #    }
+
+    #    tags = {
+    #      owner = "김교현"
+    #    }
+      
+    # }
+
+    # "khkim-work2" = {
+    #    subscription        = "nckr"
+    #    rg                  = "RG-rygus-terraform"
+    #    location            = "koreacentral"
+    #    vnet                = "terraform_vnet"
+    #    subnet              = "sub2"
+    #    ip_address          = "10.0.2.27"
+    #    public_ip           = null
+    #    nsg_id              = "NSG-khkim"
+    #    storage_account     = "wemadestorageaccount"
+    #    storage_account_rg  = "wemade-rg"
+
+    #    size                = "Standard_F2s_v2"
+    #    os_disk_type        = "Standard_LRS"
+    #    OsType              = "ubuntu"
+    #    OsImage             = "22_04-lts"
+
+    #    data_disk           = {
+
+    #    }
+
+    #    tags = {
+    #      owner = "김교현"
+    #    }
+      
+    # }
 
   }
 }
