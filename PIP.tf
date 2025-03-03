@@ -1,13 +1,40 @@
 locals {
   pip_list = {
-    "PIP-KHKIM-MS" = {
+    "PIP_NEW_WIN" = {
       rg       = "RG-rygus-terraform"
       location = "koreacentral"
       tags = {
-        owner = "김교현"
+        owner = "김교현",
+        os = "Windows"
       }
     }
-  
+
+    "PIP_NEW_LINUX" = {
+      rg       = "RG-rygus-terraform"
+      location = "koreacentral"
+      tags = {
+        owner = "김교현",
+        os = "Linux"
+      }
+    }
+
+    "PIP_replica" = {
+      rg       = "RG-rygus-terraform"
+      location = "koreacentral"
+      tags = {
+        owner = "김교현",
+        os = "replica"
+      }
+    }
+
+    "PIP_region_replica" = {
+      rg       = "RG-rygus-terraform"
+      location = "koreacentral"
+      tags = {
+        owner = "김교현",
+        os = "region_replica"
+      }
+    }
   }
 }
 

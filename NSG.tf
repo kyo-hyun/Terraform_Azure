@@ -1,6 +1,6 @@
 locals {
   NSG_list = {
-    "NSG-khkim" = {
+    "nsg_terraform" = {
       resource_group = "RG-rygus-terraform"
       location       = "koreacentral"
       nsg_rule = {

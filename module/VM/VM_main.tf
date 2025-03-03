@@ -1,48 +1,17 @@
 # locals
 locals {
-  # 신규 윈도우 vm 생성
-  vm_id = var.Os_Type == "windows" && var.source_os_snapshot == null ? {
-    id            = azurerm_windows_virtual_machine.vm_windows[0].id
-    create_option = "Empty"
-    source_resource_id = null
-    # 신규 리눅스 VM 
-    } : var.Os_Type != "windows" && var.source_os_snapshot == null ? {
-    id            = azurerm_linux_virtual_machine.vm_linux[0].id
-    create_option = "Empty"
-    source_resource_id = null
+  vm_id = var.VM_Type == "new" && var.Os_Type == "Windows" ? {
+    id = azurerm_windows_virtual_machine.vm_windows[0].id
+
+    } : var.VM_Type == "new" && var.Os_Type != "Windows" ? {
+    id = azurerm_linux_virtual_machine.vm_linux[0].id
+
     } : {
-    # 복제 생성
-    id            = azurerm_virtual_machine.replica_vm[0].id
-    create_option = "Copy"
+    id = azurerm_virtual_machine.replica_vm[0].id
     }
 }
 
-locals {
-  # windows vm
-  vm_info = var.Os_Type == "windows" && var.source_os_snapshot == null ? { for key,data_disk in var.data_disk : key => {
-    size                : data_disk.size,
-    type                : data_disk.type,
-    create_option       : "Empty",
-    source_resource_id  : null
-    }
-  # Linux vm
-  } : var.Os_Type != "windows" && var.source_os_snapshot == null ? { for key,data_disk in var.data_disk : key => {
-    size                : data_disk.size,
-    type                : data_disk.type,
-    create_option       : "Empty",
-    source_resource_id  : null
-   }
-  # 복제 생성
-  } : { for key,data_disk in var.data_disk : key => {
-    size                : null,
-    type                : data_disk.type,
-    create_option       : "Copy",
-    source_resource_id  : data_disk.data_snapshot
-    }
-  }
-}
-
-# get storage account
+# 부트진단 storage account
 data "azurerm_storage_account" "example" {
   name                = var.storage_account
   resource_group_name = var.storage_account_rg
@@ -53,7 +22,6 @@ resource "azurerm_network_interface" "nic" {
   name                            = "NIC-${var.name}"
   location                        = var.location
   resource_group_name             = var.rg
-  # 네트워크 가속화 기능
   accelerated_networking_enabled  = true
 
   ip_configuration {
@@ -67,7 +35,7 @@ resource "azurerm_network_interface" "nic" {
 
 # Winodws VM
 resource "azurerm_windows_virtual_machine" "vm_windows" {
-  count                     = var.Os_Type == "windows" && var.source_os_snapshot == null ? 1:0
+  count                     = var.Os_Type == "Windows" && var.VM_Type == "new" ? 1:0
 
   name                      = "${var.name}"
   resource_group_name       = var.rg
@@ -82,7 +50,7 @@ resource "azurerm_windows_virtual_machine" "vm_windows" {
   patch_mode                = "Manual"
 
   boot_diagnostics {
-      storage_account_uri = data.azurerm_storage_account.example.primary_blob_endpoint
+      storage_account_uri   = data.azurerm_storage_account.example.primary_blob_endpoint
   }
 
   os_disk {
@@ -103,7 +71,7 @@ resource "azurerm_windows_virtual_machine" "vm_windows" {
 
 # Linux VM
 resource "azurerm_linux_virtual_machine" "vm_linux" {
-  count                           = var.Os_Type != "windows" && var.source_os_snapshot == null? 1:0
+  count                           = var.Os_Type != "Windows" && var.VM_Type == "new" ? 1:0
 
   name                            = "${var.name}"
   resource_group_name             = var.rg
@@ -113,6 +81,7 @@ resource "azurerm_linux_virtual_machine" "vm_linux" {
   admin_password                  = var.os_profile.pw
   network_interface_ids           = [azurerm_network_interface.nic.id]
   disable_password_authentication = false
+  custom_data                     = var.script != null ? base64encode(file("${path.root}/script/${var.script}")) : null
 
   boot_diagnostics {
       storage_account_uri = data.azurerm_storage_account.example.primary_blob_endpoint
@@ -136,36 +105,36 @@ resource "azurerm_linux_virtual_machine" "vm_linux" {
 
 # replica osdisk 생성
 resource "azurerm_managed_disk" "replica_os_disk" {
-  count                 = var.source_os_snapshot != null ? 1 : 0
-  name                 = "OSDISK-${var.name}"
-  location             = var.location
-  resource_group_name  = var.rg
-  storage_account_type = var.os_disk_type
-  create_option        = "Copy"
-  hyper_v_generation   = "V1"
-  os_type              = var.Os_Type
-  source_resource_id   = var.source_os_snapshot
+  count                             = (var.VM_Type == "region_replica" || var.VM_Type == "replica") ? 1 : 0
+  name                              = "OSDISK-${var.name}"
+  location                          = var.location
+  resource_group_name               = var.rg
+  storage_account_type              = var.os_disk_type
+  create_option                     = var.VM_Type == "region_replica" ? "Import" : "Copy"
+  hyper_v_generation                = "V2"
+  os_type                           = var.Os_Type
+  source_resource_id                = var.VM_Type == "region_replica" ? null : var.source_os_snapshot
+  source_uri                        = var.VM_Type == "region_replica" ? var.vhd_sa : null
+  storage_account_id                = var.VM_Type == "region_replica" ? var.vhd_sa_id : null
 }
 
 # replica vm
 resource "azurerm_virtual_machine" "replica_vm" {
-  count                 = var.source_os_snapshot != null ? 1 : 0
-
-  name                  = "${var.name}"
-  location              = var.location
-  resource_group_name   = var.rg
-  network_interface_ids = [azurerm_network_interface.nic.id]
-  vm_size               = var.size
-
-  delete_os_disk_on_termination = false
-  delete_data_disks_on_termination = false
+  count                             = (var.VM_Type == "region_replica" || var.VM_Type == "replica") ? 1 : 0
+  name                              = "${var.name}"
+  location                          = var.location
+  resource_group_name               = var.rg
+  network_interface_ids             = [azurerm_network_interface.nic.id]
+  vm_size                           = var.size
+  delete_os_disk_on_termination     = false
+  delete_data_disks_on_termination  = false
 
   storage_os_disk {
-    name              = "OSDISK-${var.name}"
-    caching           = "ReadWrite"
-    create_option     = "Attach"
-    managed_disk_id   = azurerm_managed_disk.replica_os_disk[0].id
-    os_type           = var.Os_Type
+    name                            = "OSDISK-${var.name}"
+    caching                         = "ReadWrite"
+    create_option                   = "Attach"
+    managed_disk_id                 = azurerm_managed_disk.replica_os_disk[0].id
+    os_type                         = var.Os_Type
   }
 
   tags = var.tags
@@ -177,10 +146,16 @@ resource "azurerm_managed_disk" "data_disk" {
   name                  = "Datadisk${each.key}-${var.name}"
   location              = var.location
   resource_group_name   = var.rg
-  storage_account_type  = local.vm_info[each.key].type
-  create_option         = local.vm_info[each.key].create_option
-  disk_size_gb          = local.vm_info[each.key].size
-  source_resource_id    = local.vm_info[each.key].source_resource_id
+  storage_account_type  = each.value.type
+  disk_size_gb          = each.value.disk_type == "new" ? each.value.size : null
+  create_option         = each.value.disk_type == "new" ? "Empty" : each.value.disk_type == "replica" ? "Copy" : "Import"
+
+  # snapshot replica
+  source_resource_id    = each.value.disk_type == "replica" ? each.value.source_resource_id : null
+
+  # region replica
+  source_uri            = each.value.disk_type == "region_replica" ? each.value.data_vhd_sa : null
+  storage_account_id    = each.value.disk_type == "region_replica" ? each.value.data_vhd_sa_id : null
 }
 
 # attach data disk

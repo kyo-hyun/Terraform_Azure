@@ -8,7 +8,7 @@ locals {
       "22_04-lts" = { publisher = "Canonical", offer = "0001-com-ubuntu-server-jammy" }
     }
 
-    "windows" = {
+    "Windows" = {
       "2016-datacenter" = { publisher = "MicrosoftWindowsServer", offer = "WindowsServer" }
       "2019-datacenter" = { publisher = "MicrosoftWindowsServer", offer = "WindowsServer" }
     }
@@ -16,120 +16,142 @@ locals {
 
   vm_list = {
 
-    # Windows VM
-    # "khkim-Windows" = {
+    # # Windows VM
+    "khkim-Windows" = {
+        VM_Type             = "new"
+        subscription        = "nckr"
+        rg                  = "RG-rygus-terraform"
+        location            = "koreacentral"
+        vnet                = "terraform_vnet"
+        subnet              = "sub1"
+        ip_address          = "10.0.1.24"
+        public_ip           = "PIP_NEW_WIN"
+        nsg_id              = "nsg_terraform"
+        storage_account     = "wemadestorageaccount"
+        storage_account_rg  = "wemade-rg"
 
-    #     subscription        = "nckr"
-    #     rg                  = "RG-rygus-terraform"
-    #     location            = "koreacentral"
-    #     vnet                = "terraform_vnet"
-    #     subnet              = "sub1"
-    #     ip_address          = "10.0.1.24"
-    #     public_ip           = "pip-khkim-replica"
-    #     nsg_id              = "NSG1"
-    #     storage_account     = "wemadestorageaccount"
-    #     storage_account_rg  = "wemade-rg"
+        size                = "Standard_F2s_v2"
+        os_disk_type        = "Standard_LRS"
+        OsType              = "Windows"
+        OsImage             = "2019-datacenter"
 
-    #     size                = "Standard_F2s_v2"
-    #     os_disk_type        = "Standard_LRS"
-    #     OsType              = "windows"
-    #     OsImage             = "2019-datacenter"
+        data_disk           = {
+          1 = {
+           disk_type       = "new"
+           size            = 32
+           type            = "Standard_LRS"
+          }
+        }
 
-    #     data_disk           = {
-    #       1 = {
-    #         size            = 128
-    #         type            = "Standard_LRS"
-    #       }
-    #     }
+        tags = {
+            owner = "김교현",
+            env   = "windows"
+        }
 
-    #     tags = {
-    #         owner = "김교현",
-    #         env   = "windows"
-    #     }
+    }
 
-    # }
+    # # Linux VM
+    # "khkim-Linux" = {
+    #   VM_Type             = "new"
+    #   subscription        = "nckr"
+    #   rg                  = "RG-rygus-terraform"
+    #   location            = "koreacentral"
+    #   vnet                = "terraform_vnet"
+    #   subnet              = "sub1"
+    #   ip_address          = "10.0.1.25"
+    #   public_ip           = "PIP_NEW_LINUX"
+    #   nsg_id              = "nsg_terraform"
+    #   storage_account     = "wemadestorageaccount"
+    #   storage_account_rg  = "wemade-rg"
+    #   size                = "Standard_F2s_v2"
+    #   os_disk_type        = "Standard_LRS"
+    #   OsType              = "ubuntu"
+    #   OsImage             = "22_04-lts"
+    #   script              = "disk_format.sh"
 
-    # Linux VM
-    # "khkim-1" = {
-    #    subscription        = "nckr"
-    #    rg                  = "RG-rygus-terraform"
-    #    location            = "koreacentral"
-    #    vnet                = "terraform_vnet"
-    #    subnet              = "sub1"
-    #    ip_address          = "10.0.1.25"
-    #    public_ip           = null
-    #    nsg_id              = "NSG2"
-    #    storage_account     = "wemadestorageaccount"
-    #    storage_account_rg  = "wemade-rg"
-
-    #    size                = "Standard_F4s_v2"
-    #    os_disk_type        = "Standard_LRS"
-    #    OsType              = "ubuntu"
-    #    OsImage             = "22_04-lts"
-
-    #    data_disk           = {
-    #       1 = {
-    #         size            = 8
-    #         type            = "Standard_LRS"
-    #       }
-    #    }
-
-    #    tags = {
-    #      owner = "김교현",
-    #      env   = "Terraform"
-    #    }
+    #   data_disk           = {
+    #     1 = {
+    #       disk_type       = "new"
+    #       size            = 8
+    #       type            = "Standard_LRS"
+    #      }
+    #   }
+    #   tags = {
+    #     owner = "김교현",
+    #     env   = "Terraform"
+    #   }
       
     # }
 
-    # "khkim-2" = {
-    #    subscription        = "nckr"
-    #    rg                  = "RG-rygus-terraform"
-    #    location            = "koreacentral"
-    #    vnet                = "terraform_vnet"
-    #    subnet              = "sub2"
-    #    ip_address          = "10.0.2.27"
-    #    public_ip           = null
-    #    nsg_id              = "NSG2"
-    #    storage_account     = "wemadestorageaccount"
-    #    storage_account_rg  = "wemade-rg"
-
-    #    size                = "Standard_F4s_v2"
-    #    os_disk_type        = "Standard_LRS"
-    #    OsType              = "ubuntu"
-    #    OsImage             = "22_04-lts"
-
-    #    data_disk           = {
-
-    #    }
-
-    #    tags = {
-    #      owner = "김교현",
-    #      env   = "Terraform"
-    #    }
-      
-    # }
-
-    # #Replica VM
+    # # 동일 리전 복제 VM 
     # "khkim-replica" = {
-    #     subscription        = "nckr"
-    #     rg                  = "RG-rygus-terraform"
-    #     location            = "koreacentral"
-    #     vnet                = "terraform_vnet"
-    #     subnet              = "sub1"
-    #     ip_address          = "10.0.1.27"
-    #     public_ip           = "pip-khkim-replica"
-    #     nsg_id              = "NSG1"
-    #     storage_account     = "wemadestorageaccount"
-    #     storage_account_rg  = "wemade-rg"
+    #    VM_Type                  = "replica"
+    #    subscription             = "nckr"
+    #    rg                       = "RG-rygus-terraform"
+    #    location                 = "koreacentral"
+    #    vnet                     = "terraform_vnet"
+    #    subnet                   = "sub2"
+    #    ip_address               = "10.0.2.27"
+    #    public_ip                = "PIP_replica"
+    #    nsg_id                   = "nsg_terraform"
+    #    storage_account          = "wemadestorageaccount"
+    #    storage_account_rg       = "wemade-rg"
+      
+    #    size                     = "Standard_F2s_v2"
+    #    OsType                   = "Linux"
+    #    source_os_sanpshot       = "/subscriptions/122a2e7e-7d1a-4b2d-a26c-0a156dfa583c/resourceGroups/RG-KHKIM/providers/Microsoft.Compute/snapshots/OSDISK-SNAP-khkim"
+    #    os_disk_type             = "Standard_LRS"
 
-    #     size                = "Standard_F2s_v2"
+    #    data_disk = {
+    #       1 = {
+    #         disk_type           = "replica"
+    #         type                = "Standard_LRS"
+    #         source_resource_id  = "/subscriptions/122a2e7e-7d1a-4b2d-a26c-0a156dfa583c/resourceGroups/RG-KHKIM/providers/Microsoft.Compute/snapshots/DATA-SANP-khkim"
+    #       }
 
-    #     OsType              = "Linux"
-    #     source_os_sanpshot  = "/subscriptions/122a2e7e-7d1a-4b2d-a26c-0a156dfa583c/resourceGroups/RG-rygus-terraform/providers/Microsoft.Compute/snapshots/OSDISK-rygus-snap"
-    #     os_disk_type        = "Standard_LRS"
-
-    #     data_disk           = {
+    #       2 = {
+    #         disk_type           = "new"
+    #         size                = 8
+    #         type                = "Standard_LRS"
+    #       }
           
+    #    }
+
+    #    tags = {
+    #      owner = "김교현",
+    #      env   = "Terraform"
+    #    }
+      
+    # }
+
+    # # 리전 간 복제 VM
+    # "khkim-region" = {
+    #     VM_Type               = "region_replica"
+    #     subscription          = "nckr"
+    #     rg                    = "RG-rygus-terraform"
+    #     location              = "koreacentral"
+    #     vnet                  = "terraform_vnet"
+    #     subnet                = "sub1"
+    #     ip_address            = "10.0.1.27"
+    #     public_ip             = "PIP_region_replica"
+    #     nsg_id                = "nsg_terraform"
+    #     storage_account       = "wemadestorageaccount"
+    #     storage_account_rg    = "wemade-rg"
+
+    #     size                  = "Standard_F2s_v2"
+
+    #     OsType                = "Linux"
+    #     os_disk_type          = "Standard_LRS"
+    #     vhd_sa                = "https://wemadestorageaccount.blob.core.windows.net/vhd/OsSanp-khkim-jp-test-25-03-02.vhd"
+    #     vhd_sa_id             = "/subscriptions/122a2e7e-7d1a-4b2d-a26c-0a156dfa583c/resourceGroups/wemade-rg/providers/Microsoft.Storage/storageAccounts/wemadestorageaccount"
+
+    #     data_disk             = {
+    #        1 = {
+    #           disk_type       = "region_replica"
+    #           type            = "Standard_LRS"
+    #           data_vhd_sa     = "https://wemadestorageaccount.blob.core.windows.net/vhd/DataSanp-khkim-jp-test-25-03-02-0.vhd"
+    #           data_vhd_sa_id  = "/subscriptions/122a2e7e-7d1a-4b2d-a26c-0a156dfa583c/resourceGroups/wemade-rg/providers/Microsoft.Storage/storageAccounts/wemadestorageaccount"
+    #       }
     #     }
 
     #    tags = {
@@ -138,95 +160,14 @@ locals {
     #    }
     # }
 
-    # "khkim-ms" = {
-    #    subscription        = "nckr"
-    #    rg                  = "RG-rygus-terraform"
-    #    location            = "koreacentral"
-    #    vnet                = "terraform_vnet"
-    #    subnet              = "sub2"
-    #    ip_address          = "10.0.2.25"
-    #    public_ip           = "PIP-KHKIM-MS"
-    #    nsg_id              = "NSG-khkim"
-    #    storage_account     = "wemadestorageaccount"
-    #    storage_account_rg  = "wemade-rg"
-
-    #    size                = "Standard_F2s_v2"
-    #    os_disk_type        = "Standard_LRS"
-    #    OsType              = "ubuntu"
-    #    OsImage             = "22_04-lts"
-
-    #    data_disk           = {
-
-    #    }
-
-    #    tags = {
-    #      owner = "김교현"
-    #    }
-      
-    # }
-
-    # "khkim-work1" = {
-    #    subscription        = "nckr"
-    #    rg                  = "RG-rygus-terraform"
-    #    location            = "koreacentral"
-    #    vnet                = "terraform_vnet"
-    #    subnet              = "sub2"
-    #    ip_address          = "10.0.2.26"
-    #    public_ip           = null
-    #    nsg_id              = "NSG-khkim"
-    #    storage_account     = "wemadestorageaccount"
-    #    storage_account_rg  = "wemade-rg"
-
-    #    size                = "Standard_F2s_v2"
-    #    os_disk_type        = "Standard_LRS"
-    #    OsType              = "ubuntu"
-    #    OsImage             = "22_04-lts"
-
-    #    data_disk           = {
-
-    #    }
-
-    #    tags = {
-    #      owner = "김교현"
-    #    }
-      
-    # }
-
-    # "khkim-work2" = {
-    #    subscription        = "nckr"
-    #    rg                  = "RG-rygus-terraform"
-    #    location            = "koreacentral"
-    #    vnet                = "terraform_vnet"
-    #    subnet              = "sub2"
-    #    ip_address          = "10.0.2.27"
-    #    public_ip           = null
-    #    nsg_id              = "NSG-khkim"
-    #    storage_account     = "wemadestorageaccount"
-    #    storage_account_rg  = "wemade-rg"
-
-    #    size                = "Standard_F2s_v2"
-    #    os_disk_type        = "Standard_LRS"
-    #    OsType              = "ubuntu"
-    #    OsImage             = "22_04-lts"
-
-    #    data_disk           = {
-
-    #    }
-
-    #    tags = {
-    #      owner = "김교현"
-    #    }
-      
-    # }
-
   }
 }
-
 
 module "azure_vm" {
   source              = "./module/VM"
   for_each            = local.vm_list
   name                = each.key
+  VM_Type             = each.value.VM_Type
   rg                  = each.value.rg
   location            = each.value.location
   Os_Type             = each.value.OsType
@@ -240,7 +181,10 @@ module "azure_vm" {
   storage_account_rg  = each.value.storage_account_rg     
   size                = each.value.size
   os_disk_type        = each.value.os_disk_type
+  script              = try(each.value.script,null)
   source_os_snapshot  = try(each.value.source_os_sanpshot,null)
+  vhd_sa              = try(each.value.vhd_sa,null)
+  vhd_sa_id           = try(each.value.vhd_sa_id,null)
   os_profile          = local.os_profile.profile[each.value.subscription]
   data_disk           = each.value.data_disk
   tags                = each.value.tags

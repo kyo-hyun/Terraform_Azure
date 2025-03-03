@@ -2,6 +2,10 @@ variable "name" {
     default = null
 }
 
+variable "VM_Type" {
+    default = null
+}
+
 variable "rg" {
     default = null
 }
@@ -46,6 +50,10 @@ variable "nsg_id" {
     default = null
 }
 
+variable "script" {
+    default = null
+}
+
 variable "os_disk_type" {
     default = null
 }
@@ -55,6 +63,14 @@ variable "source_os_snapshot" {
 }
 
 variable "public_ip" {
+    default = null
+}
+
+variable "vhd_sa" {
+    default = null
+}
+
+variable "vhd_sa_id" {
     default = null
 }
 
