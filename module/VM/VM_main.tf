@@ -2,10 +2,8 @@
 locals {
   vm_id = var.VM_Type == "new" && var.Os_Type == "Windows" ? {
     id = azurerm_windows_virtual_machine.vm_windows[0].id
-
     } : var.VM_Type == "new" && var.Os_Type != "Windows" ? {
     id = azurerm_linux_virtual_machine.vm_linux[0].id
-
     } : {
     id = azurerm_virtual_machine.replica_vm[0].id
     }
@@ -105,22 +103,23 @@ resource "azurerm_linux_virtual_machine" "vm_linux" {
 
 # replica osdisk 생성
 resource "azurerm_managed_disk" "replica_os_disk" {
-  count                             = (var.VM_Type == "region_replica" || var.VM_Type == "replica") ? 1 : 0
+  count                             = var.VM_Type == "replica" ? 1 : 0
   name                              = "OSDISK-${var.name}"
   location                          = var.location
   resource_group_name               = var.rg
   storage_account_type              = var.os_disk_type
-  create_option                     = var.VM_Type == "region_replica" ? "Import" : "Copy"
+  # null이 아닐 경우 무슨 값이 있을 경우 Import (vhd라는 뜻이니까)
+  create_option                     = var.source_vhd_sa_id != null ? "Import" : "Copy"
   hyper_v_generation                = "V2"
   os_type                           = var.Os_Type
-  source_resource_id                = var.VM_Type == "region_replica" ? null : var.source_os_snapshot
-  source_uri                        = var.VM_Type == "region_replica" ? var.vhd_sa : null
-  storage_account_id                = var.VM_Type == "region_replica" ? var.vhd_sa_id : null
+  source_resource_id                = var.replica_snapshot != null ? var.replica_snapshot : null
+  source_uri                        = var.source_vhd != null ? var.source_vhd : null
+  storage_account_id                = var.source_vhd_sa_id != null ? var.source_vhd_sa_id : null
 }
 
 # replica vm
 resource "azurerm_virtual_machine" "replica_vm" {
-  count                             = (var.VM_Type == "region_replica" || var.VM_Type == "replica") ? 1 : 0
+  count                             = var.VM_Type == "replica" ? 1 : 0
   name                              = "${var.name}"
   location                          = var.location
   resource_group_name               = var.rg
@@ -147,15 +146,20 @@ resource "azurerm_managed_disk" "data_disk" {
   location              = var.location
   resource_group_name   = var.rg
   storage_account_type  = each.value.type
-  disk_size_gb          = each.value.disk_type == "new" ? each.value.size : null
-  create_option         = each.value.disk_type == "new" ? "Empty" : each.value.disk_type == "replica" ? "Copy" : "Import"
+  create_option = (
+    try(each.value.size, null) != null ? "Empty" :
+    try(each.value.source_vhd, null) != null ? "Import" :
+    "Copy"
+  )
+  # 신규 생성
+  disk_size_gb          = try(each.value.size,null)
 
   # snapshot replica
-  source_resource_id    = each.value.disk_type == "replica" ? each.value.source_resource_id : null
+  source_resource_id    = try(each.value.replica_snapshot,null)
 
   # region replica
-  source_uri            = each.value.disk_type == "region_replica" ? each.value.data_vhd_sa : null
-  storage_account_id    = each.value.disk_type == "region_replica" ? each.value.data_vhd_sa_id : null
+  source_uri            = try(each.value.source_vhd,null)
+  storage_account_id    = try(each.value.source_vhd_sa_id,null)
 }
 
 # attach data disk

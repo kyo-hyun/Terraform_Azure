@@ -58,7 +58,7 @@ variable "os_disk_type" {
     default = null
 }
 
-variable "source_os_snapshot" {
+variable "replica_snapshot" {
     default = null
 }
 
@@ -66,11 +66,11 @@ variable "public_ip" {
     default = null
 }
 
-variable "vhd_sa" {
+variable "source_vhd_sa_id" {
     default = null
 }
 
-variable "vhd_sa_id" {
+variable "source_vhd" {
     default = null
 }
 
