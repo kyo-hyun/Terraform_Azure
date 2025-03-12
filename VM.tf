@@ -23,124 +23,125 @@ locals {
   vm_list = {
 
     # Windows VM
-    "khkim-Windows" = {
-        rg                      = "RG-rygus-terraform"
-        location                = "koreacentral"
-        vnet                    = "terraform_vnet"
-        subnet                  = "sub1"
-        ip_address              = "10.0.1.24"
-        public_ip               = "PIP_NEW_WIN"
-        nsg                     = "nsg_terraform"
+    # "khkim-Windows" = {
+    #     rg                      = "RG-rygus-terraform"
+    #     location                = "koreacentral"
+    #     vnet                    = "terraform_vnet"
+    #     subnet                  = "sub1"
+    #     ip_address              = "10.0.1.24"
+    #     public_ip               = "PIP_NEW_WIN"
+    #     nsg                     = "nsg_terraform"
+    #     script                  = "LYKR-PostScript"
 
-        size                    = "Standard_F2s_v2"
-        os_disk_type            = "Standard_LRS"
-        OsType                  = "Windows"
-        OsImage                 = "2019-datacenter"
+    #     size                    = "Standard_F2s_v2"
+    #     os_disk_type            = "Standard_LRS"
+    #     OsType                  = "Windows"
+    #     OsImage                 = "2019-datacenter"
 
-        data_disk = {
-          1 = {
-           size                 = 32
-           type                 = "Standard_LRS"
-          }
-        }
+    #     data_disk = {
+    #       1 = {
+    #        size                 = 32
+    #        type                 = "Standard_LRS"
+    #       }
+    #     }
 
-        tags = {
-            owner = "김교현",
-            env   = "windows"
-        }
-    }
+    #     tags = {
+    #         owner = "김교현",
+    #         env   = "windows"
+    #     }
+    # }
 
-    # Linux VM
-    "khkim-Linux" = {
-      rg                  = "RG-rygus-terraform"
-      location            = "koreacentral"
-      vnet                = "terraform_vnet"
-      subnet              = "sub1"
-      ip_address          = "10.0.1.25"
-      public_ip           = "PIP_NEW_LINUX"
-      nsg                 = "nsg_terraform"
+    # # Linux VM
+    # "khkim-Linux" = {
+    #   rg                  = "RG-rygus-terraform"
+    #   location            = "koreacentral"
+    #   vnet                = "terraform_vnet"
+    #   subnet              = "sub1"
+    #   ip_address          = "10.0.1.25"
+    #   public_ip           = "PIP_NEW_LINUX"
+    #   nsg                 = "nsg_terraform"
 
-      size                = "Standard_F2s_v2"
-      os_disk_type        = "Standard_LRS"
-      OsType              = "ubuntu"
-      OsImage             = "22_04-lts"
+    #   size                = "Standard_F2s_v2"
+    #   os_disk_type        = "Standard_LRS"
+    #   OsType              = "ubuntu"
+    #   OsImage             = "22_04-lts"
 
-      script              = "disk_format.sh"
+    #   script              = "disk_format.sh"
 
-      data_disk           = {
-        1 = {
-          disk_type       = "new"
-          size            = 8
-          type            = "Standard_LRS"
-         }
-      }
-      tags = {
-        owner = "김교현",
-        env   = "Terraform"
-      }
+    #   data_disk           = {
+    #     1 = {
+    #       disk_type       = "new"
+    #       size            = 8
+    #       type            = "Standard_LRS"
+    #      }
+    #   }
+    #   tags = {
+    #     owner = "김교현",
+    #     env   = "Terraform"
+    #   }
       
-    }
+    # }
 
-    # 동일 리전 복제 VM 
-    "khkim-replica" = {
-       VM_Type                  = "replica"
-       rg                       = "RG-rygus-terraform"
-       location                 = "koreacentral"
-       vnet                     = "terraform_vnet"
-       subnet                   = "sub2"
-       ip_address               = "10.0.2.27"
-       public_ip                = "PIP_replica"
-       nsg                      = "nsg_terraform"
+    # # 동일 리전 복제 VM 
+    # "khkim-replica" = {
+    #    VM_Type                  = "replica"
+    #    rg                       = "RG-rygus-terraform"
+    #    location                 = "koreacentral"
+    #    vnet                     = "terraform_vnet"
+    #    subnet                   = "sub2"
+    #    ip_address               = "10.0.2.27"
+    #    public_ip                = "PIP_replica"
+    #    nsg                      = "nsg_terraform"
       
-       size                     = "Standard_F2s_v2"
-       os_disk_type             = "Standard_LRS"
-       OsType                   = "Windows"
-       replica_snapshot         = "/subscriptions/122a2e7e-7d1a-4b2d-a26c-0a156dfa583c/resourceGroups/RG-rygus-terraform/providers/Microsoft.Compute/snapshots/khkim-snapshot"
+    #    size                     = "Standard_F2s_v2"
+    #    os_disk_type             = "Standard_LRS"
+    #    OsType                   = "Windows"
+    #    replica_snapshot         = "/subscriptions/122a2e7e-7d1a-4b2d-a26c-0a156dfa583c/resourceGroups/jypark-RG/providers/Microsoft.Compute/snapshots/khkim-test"
 
-       data_disk = {
-          1 = {
-            type                = "Standard_LRS"
-            replica_snapshot    = "/subscriptions/122a2e7e-7d1a-4b2d-a26c-0a156dfa583c/resourceGroups/RG-rygus-terraform/providers/Microsoft.Compute/snapshots/data-khkim-snap"
-          } 
-       }
+    #    data_disk = {
+    #       # 1 = {
+    #       #   type                = "Standard_LRS"
+    #       #   replica_snapshot    = "/subscriptions/122a2e7e-7d1a-4b2d-a26c-0a156dfa583c/resourceGroups/RG-rygus-terraform/providers/Microsoft.Compute/snapshots/data-khkim-snap"
+    #       # } 
+    #    }
 
-       tags = {
-         owner = "김교현",
-         env   = "Terraform"
-       }
+    #    tags = {
+    #      owner = "김교현",
+    #      env   = "Terraform"
+    #    }
       
-    }
+    # }
 
-    # 리전 간 복제 VM
-    "khkim-region" = {
-        VM_Type               = "replica"
-        rg                    = "RG-rygus-terraform"
-        location              = "koreacentral"
-        vnet                  = "terraform_vnet"
-        subnet                = "sub1"
-        ip_address            = "10.0.1.27"
-        public_ip             = "PIP_region_replica"
-        nsg                   = "nsg_terraform"
+    # # 리전 간 복제 VM
+    # "khkim-region" = {
+    #     VM_Type               = "replica"
+    #     rg                    = "RG-rygus-terraform"
+    #     location              = "koreacentral"
+    #     vnet                  = "terraform_vnet"
+    #     subnet                = "sub1"
+    #     ip_address            = "10.0.1.27"
+    #     public_ip             = "PIP_region_replica"
+    #     nsg                   = "nsg_terraform"
 
-        size                  = "Standard_F2s_v2"
-        os_disk_type          = "Standard_LRS"
-        OsType                = "Linux"
-        source_vhd            = "https://wemadestorageaccount.blob.core.windows.net/vhd/OsSanp-khkim-jp-test-25-03-11.vhd"
-        source_vhd_sa_id      = "/subscriptions/122a2e7e-7d1a-4b2d-a26c-0a156dfa583c/resourceGroups/wemade-rg/providers/Microsoft.Storage/storageAccounts/wemadestorageaccount"
+    #     size                  = "Standard_F2s_v2"
+    #     os_disk_type          = "Standard_LRS"
+    #     OsType                = "Linux"
+    #     source_vhd            = "https://wemadestorageaccount.blob.core.windows.net/vhd/OsSanp-khkim-jp-test-25-03-11.vhd"
+    #     source_vhd_sa_id      = "/subscriptions/122a2e7e-7d1a-4b2d-a26c-0a156dfa583c/resourceGroups/wemade-rg/providers/Microsoft.Storage/storageAccounts/wemadestorageaccount"
 
-        data_disk             = {
-           1 = {
-              type              = "Standard_LRS"
-              source_vhd        = "https://wemadestorageaccount.blob.core.windows.net/vhd/DataSanp-khkim-jp-test-25-03-11-0.vhd"
-              source_vhd_sa_id  = "/subscriptions/122a2e7e-7d1a-4b2d-a26c-0a156dfa583c/resourceGroups/wemade-rg/providers/Microsoft.Storage/storageAccounts/wemadestorageaccount"
-          }
-        }
+    #     data_disk             = {
+    #        1 = {
+    #           type              = "Standard_LRS"
+    #           source_vhd        = "https://wemadestorageaccount.blob.core.windows.net/vhd/DataSanp-khkim-jp-test-25-03-11-0.vhd"
+    #           source_vhd_sa_id  = "/subscriptions/122a2e7e-7d1a-4b2d-a26c-0a156dfa583c/resourceGroups/wemade-rg/providers/Microsoft.Storage/storageAccounts/wemadestorageaccount"
+    #       }
+    #     }
 
-       tags = {
-         owner = "김교현",
-         env   = "replica"
-       }
-    }
+    #    tags = {
+    #      owner = "김교현",
+    #      env   = "replica"
+    #    }
+    # }
 
   }
 }

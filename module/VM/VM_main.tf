@@ -67,6 +67,33 @@ resource "azurerm_windows_virtual_machine" "vm_windows" {
   tags = var.tags
 }
 
+resource "azurerm_virtual_machine_extension" "cse" {
+  count                 = var.Os_Type == "Windows" && var.VM_Type == "new" ? 1:0
+  name                  = "custom-script-extension"
+  virtual_machine_id    = azurerm_windows_virtual_machine.vm_windows[0].id
+  publisher             = "Microsoft.Compute"
+  type                  = "CustomScriptExtension"
+  type_handler_version  = "1.10"
+
+  settings = <<SETTINGS
+    {
+      "fileUris": ["https://${var.storage_account}.blob.core.windows.net/lykr-postscript/${var.script}.ps1"],
+      "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File ${var.script}.ps1"
+    }
+  SETTINGS
+
+  protected_settings = jsonencode({
+    storageAccountName = var.storage_account
+    storageAccountKey  = data.azurerm_storage_account.example.primary_access_key
+  })
+
+  timeouts {
+    create = "1h30m"
+    delete = "1h15m"
+  }
+}
+
+
 # Linux VM
 resource "azurerm_linux_virtual_machine" "vm_linux" {
   count                           = var.Os_Type != "Windows" && var.VM_Type == "new" ? 1:0
@@ -108,7 +135,6 @@ resource "azurerm_managed_disk" "replica_os_disk" {
   location                          = var.location
   resource_group_name               = var.rg
   storage_account_type              = var.os_disk_type
-  # null이 아닐 경우 무슨 값이 있을 경우 Import (vhd라는 뜻이니까)
   create_option                     = var.source_vhd_sa_id != null ? "Import" : "Copy"
   hyper_v_generation                = "V2"
   os_type                           = var.Os_Type
@@ -134,6 +160,11 @@ resource "azurerm_virtual_machine" "replica_vm" {
     create_option                   = "Attach"
     managed_disk_id                 = azurerm_managed_disk.replica_os_disk[0].id
     os_type                         = var.Os_Type
+  }
+
+  boot_diagnostics {
+    enabled     = true
+    storage_uri = data.azurerm_storage_account.example.primary_blob_endpoint
   }
 
   tags = var.tags
