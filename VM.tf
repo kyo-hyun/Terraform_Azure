@@ -3,8 +3,8 @@ locals {
 
   # boot diagnostics storage account
   boot_storageaccount = {
-    boot_diagsa         = "wemadestorageaccount"
-    boot_diagsa_rg      = "wemade-rg"
+    boot_diagsa         = "khkimtest"
+    boot_diagsa_rg      = "khkim-test-rg"
   }
 
   image_map = {
@@ -31,18 +31,18 @@ locals {
     #     ip_address              = "10.0.1.24"
     #     public_ip               = "PIP_NEW_WIN"
     #     nsg                     = "nsg_terraform"
-    #     script                  = "LYKR-PostScript"
 
     #     size                    = "Standard_F2s_v2"
     #     os_disk_type            = "Standard_LRS"
     #     OsType                  = "Windows"
     #     OsImage                 = "2019-datacenter"
+    #     os_disk_size            = 256
 
     #     data_disk = {
-    #       1 = {
-    #        size                 = 32
-    #        type                 = "Standard_LRS"
-    #       }
+    #        1 = {
+    #           size            = 32
+    #           type            = "Standard_LRS"
+    #        }
     #     }
 
     #     tags = {
@@ -51,7 +51,7 @@ locals {
     #     }
     # }
 
-    # # Linux VM
+    # Linux VM
     # "khkim-Linux" = {
     #   rg                  = "RG-rygus-terraform"
     #   location            = "koreacentral"
@@ -65,15 +65,21 @@ locals {
     #   os_disk_type        = "Standard_LRS"
     #   OsType              = "ubuntu"
     #   OsImage             = "22_04-lts"
+    #   os_disk_size        = 256
 
     #   script              = "disk_format.sh"
 
     #   data_disk           = {
-    #     1 = {
-    #       disk_type       = "new"
-    #       size            = 8
-    #       type            = "Standard_LRS"
-    #      }
+    #       1 = {
+    #           size            = 64
+    #           type            = "Standard_LRS"
+    #           source_vhd      = "https://khkimtest.blob.core.windows.net/vhd/DataSanp-khkim-jp-test-25-04-16-0.vhd"
+    #        }
+
+    #       2 = {
+    #           size            = 64
+    #           type            = "Standard_LRS"
+    #        }
     #   }
     #   tags = {
     #     owner = "김교현",
@@ -82,7 +88,7 @@ locals {
       
     # }
 
-    # # 동일 리전 복제 VM 
+    # 동일 리전 복제 VM 
     # "khkim-replica" = {
     #    VM_Type                  = "replica"
     #    rg                       = "RG-rygus-terraform"
@@ -93,26 +99,32 @@ locals {
     #    public_ip                = "PIP_replica"
     #    nsg                      = "nsg_terraform"
       
-    #    size                     = "Standard_F2s_v2"
+    #    size                     = "Standard_F4s_v2"
     #    os_disk_type             = "Standard_LRS"
-    #    OsType                   = "Windows"
-    #    replica_snapshot         = "/subscriptions/122a2e7e-7d1a-4b2d-a26c-0a156dfa583c/resourceGroups/jypark-RG/providers/Microsoft.Compute/snapshots/khkim-test"
+    #    OsType                   = "Linux"
+    #    os_disk_size             = 256
+    #    source_snapshot          = "/subscriptions/122a2e7e-7d1a-4b2d-a26c-0a156dfa583c/resourceGroups/RG-KHKIM/providers/Microsoft.Compute/snapshots/linux-snap"
 
     #    data_disk = {
-    #       # 1 = {
-    #       #   type                = "Standard_LRS"
-    #       #   replica_snapshot    = "/subscriptions/122a2e7e-7d1a-4b2d-a26c-0a156dfa583c/resourceGroups/RG-rygus-terraform/providers/Microsoft.Compute/snapshots/data-khkim-snap"
-    #       # } 
+    #       1 = {
+    #         size                = 64
+    #         type                = "Standard_LRS"
+    #         source_snapshot     = "/subscriptions/122a2e7e-7d1a-4b2d-a26c-0a156dfa583c/resourceGroups/RG-KHKIM/providers/Microsoft.Compute/snapshots/khkim-linux-datasnap"
+    #       } 
+
+    #       2 = {
+    #         size                = 32
+    #         type                = "Standard_LRS"
+    #       } 
     #    }
 
     #    tags = {
     #      owner = "김교현",
     #      env   = "Terraform"
-    #    }
-      
+    #    }    
     # }
 
-    # # 리전 간 복제 VM
+    # 리전 간 복제 VM
     # "khkim-region" = {
     #     VM_Type               = "replica"
     #     rg                    = "RG-rygus-terraform"
@@ -124,17 +136,17 @@ locals {
     #     nsg                   = "nsg_terraform"
 
     #     size                  = "Standard_F2s_v2"
-    #     os_disk_type          = "Standard_LRS"
+    #     os_disk_type          = "Premium_LRS"
     #     OsType                = "Linux"
-    #     source_vhd            = "https://wemadestorageaccount.blob.core.windows.net/vhd/OsSanp-khkim-jp-test-25-03-11.vhd"
-    #     source_vhd_sa_id      = "/subscriptions/122a2e7e-7d1a-4b2d-a26c-0a156dfa583c/resourceGroups/wemade-rg/providers/Microsoft.Storage/storageAccounts/wemadestorageaccount"
+    #     os_disk_size          = 64
+    #     source_vhd            = "https://khkimtest.blob.core.windows.net/vhd/OsSanp-khkim-jp-test-25-04-16.vhd"
 
     #     data_disk             = {
     #        1 = {
-    #           type              = "Standard_LRS"
-    #           source_vhd        = "https://wemadestorageaccount.blob.core.windows.net/vhd/DataSanp-khkim-jp-test-25-03-11-0.vhd"
-    #           source_vhd_sa_id  = "/subscriptions/122a2e7e-7d1a-4b2d-a26c-0a156dfa583c/resourceGroups/wemade-rg/providers/Microsoft.Storage/storageAccounts/wemadestorageaccount"
-    #       }
+    #           size            = 64
+    #           type            = "Standard_LRS"
+    #           source_vhd      = "https://khkimtest.blob.core.windows.net/vhd/DataSanp-khkim-jp-test-25-04-16-0.vhd"
+    #        }
     #     }
 
     #    tags = {
@@ -155,6 +167,7 @@ module "azure_vm" {
   location            = each.value.location
   Os_Type             = each.value.OsType
   os_image            = try(local.image_map[each.value.OsType][each.value.OsImage],null)
+  osdisk_size        = each.value.os_disk_size
   sku                 = try(each.value.OsImage,null)
   subnet              = module.vnet[each.value.vnet].get_subnet_id[each.value.subnet]
   ip_address          = each.value.ip_address
@@ -165,9 +178,8 @@ module "azure_vm" {
   size                = each.value.size
   os_disk_type        = each.value.os_disk_type
   script              = try(each.value.script,null)
-  replica_snapshot    = try(each.value.replica_snapshot,null)
+  source_snapshot     = try(each.value.source_snapshot,null)
   source_vhd          = try(each.value.source_vhd,null)
-  source_vhd_sa_id    = try(each.value.vhd_sa_id,null)
   os_profile          = local.os_profile.profile["nckr"]
   data_disk           = each.value.data_disk
   tags                = each.value.tags

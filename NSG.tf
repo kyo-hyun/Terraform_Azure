@@ -14,7 +14,7 @@ locals {
           source_address_prefixes    = ["211.117.84.44", "1.235.222.130"]
           destination_address_prefix = "*"
         }
-
+ 
         "allow-ssh" = {
           priority                   = 200
           direction                  = "Inbound"
@@ -25,6 +25,7 @@ locals {
           source_address_prefixes    = ["211.117.84.44", "1.235.222.130"]
           destination_address_prefix = "*"
         }
+
       }
       tags = {
         owner = "김교현"

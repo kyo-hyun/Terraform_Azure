@@ -33,19 +33,20 @@ resource "azurerm_network_interface" "nic" {
 
 # Winodws VM
 resource "azurerm_windows_virtual_machine" "vm_windows" {
-  count                     = var.Os_Type == "Windows" && var.VM_Type == "new" ? 1:0
+  count                             = var.Os_Type == "Windows" && var.VM_Type == "new" ? 1:0
 
-  name                      = "${var.name}"
-  resource_group_name       = var.rg
-  location                  = var.location
-  size                      = var.size
-  admin_username            = var.os_profile.id
-  admin_password            = var.os_profile.pw
-  network_interface_ids     = [azurerm_network_interface.nic.id]
-  timezone                  = "Korea Standard Time"
+  name                              = "${var.name}"
+  resource_group_name               = var.rg
+  location                          = var.location
+  size                              = var.size
+  admin_username                    = var.os_profile.id
+  admin_password                    = var.os_profile.pw
+  network_interface_ids             = [azurerm_network_interface.nic.id]
+  timezone                          = "Korea Standard Time"
 
-  enable_automatic_updates  = false
-  patch_mode                = "Manual"
+  enable_automatic_updates          = false
+  patch_mode                        = "Manual"
+  vm_agent_platform_updates_enabled = false
 
   boot_diagnostics {
       storage_account_uri   = data.azurerm_storage_account.example.primary_blob_endpoint
@@ -55,6 +56,7 @@ resource "azurerm_windows_virtual_machine" "vm_windows" {
     name                    = "OSDISK-${var.name}"
     caching                 = "ReadWrite"
     storage_account_type    = "Standard_LRS"
+    disk_size_gb            = var.osdisk_size
   }
 
   source_image_reference {
@@ -68,7 +70,7 @@ resource "azurerm_windows_virtual_machine" "vm_windows" {
 }
 
 resource "azurerm_virtual_machine_extension" "cse" {
-  count                 = var.Os_Type == "Windows" && var.VM_Type == "new" ? 1:0
+  count                 = var.Os_Type == "Windows" && var.script != null ? 1:0
   name                  = "custom-script-extension"
   virtual_machine_id    = azurerm_windows_virtual_machine.vm_windows[0].id
   publisher             = "Microsoft.Compute"
@@ -77,7 +79,7 @@ resource "azurerm_virtual_machine_extension" "cse" {
 
   settings = <<SETTINGS
     {
-      "fileUris": ["https://${var.storage_account}.blob.core.windows.net/lykr-postscript/${var.script}.ps1"],
+      "fileUris": ["https://${var.storage_account}.blob.core.windows.net/script/${var.script}.ps1"],
       "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File ${var.script}.ps1"
     }
   SETTINGS
@@ -92,7 +94,6 @@ resource "azurerm_virtual_machine_extension" "cse" {
     delete = "1h15m"
   }
 }
-
 
 # Linux VM
 resource "azurerm_linux_virtual_machine" "vm_linux" {
@@ -116,6 +117,7 @@ resource "azurerm_linux_virtual_machine" "vm_linux" {
     name                    = "OSDISK-${var.name}"
     caching                 = "ReadWrite"
     storage_account_type    = var.os_disk_type
+    disk_size_gb            = var.osdisk_size
   }
 
   source_image_reference {
@@ -135,12 +137,17 @@ resource "azurerm_managed_disk" "replica_os_disk" {
   location                          = var.location
   resource_group_name               = var.rg
   storage_account_type              = var.os_disk_type
-  create_option                     = var.source_vhd_sa_id != null ? "Import" : "Copy"
+  create_option                     = var.source_vhd != null ? "Import" : "Copy"
   hyper_v_generation                = "V2"
+  disk_size_gb                      = var.osdisk_size
   os_type                           = var.Os_Type
-  source_resource_id                = var.replica_snapshot != null ? var.replica_snapshot : null
+
+  # snapshot 복제 생성 (같은 리전 간 복제 생성)
+  source_resource_id                = var.source_snapshot != null ? var.source_snapshot : null
+
+  # vhd 복제 생성 (다른 리전 간 복제 생성)
   source_uri                        = var.source_vhd != null ? var.source_vhd : null
-  storage_account_id                = var.source_vhd_sa_id != null ? var.source_vhd_sa_id : null
+  storage_account_id                = var.source_vhd != null ? data.azurerm_storage_account.example.id : null
 }
 
 # replica vm
@@ -170,27 +177,23 @@ resource "azurerm_virtual_machine" "replica_vm" {
   tags = var.tags
 }
 
-# data disk
 resource "azurerm_managed_disk" "data_disk" {
   for_each              = var.data_disk
   name                  = "Datadisk${each.key}-${var.name}"
   location              = var.location
   resource_group_name   = var.rg
   storage_account_type  = each.value.type
-  create_option = (
-    try(each.value.size, null) != null ? "Empty" :
-    try(each.value.source_vhd, null) != null ? "Import" :
-    "Copy"
-  )
-  # 신규 생성
-  disk_size_gb          = try(each.value.size,null)
+  disk_size_gb          = each.value.size
+
+  # snapshot이 null이면 empty 이런 개념이 안되는게 아예 snapshot자체가 선언이 되어 있지 않음
+  create_option         = try(each.value.source_snapshot, null) != null ? "Copy" : try(each.value.source_vhd, null) != null ? "Import" : "Empty"
 
   # snapshot replica
-  source_resource_id    = try(each.value.replica_snapshot,null)
+  source_resource_id    = try(each.value.source_snapshot,null)
 
   # region replica
   source_uri            = try(each.value.source_vhd,null)
-  storage_account_id    = try(each.value.source_vhd_sa_id,null)
+  storage_account_id    = try(each.value.source_vhd,null) != null ? data.azurerm_storage_account.example.id : null
 }
 
 # attach data disk

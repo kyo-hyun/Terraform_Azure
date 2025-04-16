@@ -22,6 +22,10 @@ variable "os_image" {
     default = null
 }
 
+variable "osdisk_size" {
+    default = null
+}
+
 variable "sku" {
     default = null
 }
@@ -58,7 +62,7 @@ variable "os_disk_type" {
     default = null
 }
 
-variable "replica_snapshot" {
+variable "source_snapshot" {
     default = null
 }
 
