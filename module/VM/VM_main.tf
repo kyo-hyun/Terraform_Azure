@@ -46,7 +46,6 @@ resource "azurerm_windows_virtual_machine" "vm_windows" {
 
   enable_automatic_updates          = false
   patch_mode                        = "Manual"
-  vm_agent_platform_updates_enabled = false
 
   boot_diagnostics {
       storage_account_uri   = data.azurerm_storage_account.example.primary_blob_endpoint
