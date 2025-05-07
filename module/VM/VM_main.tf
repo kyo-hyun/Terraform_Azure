@@ -68,6 +68,7 @@ resource "azurerm_windows_virtual_machine" "vm_windows" {
   tags = var.tags
 }
 
+# windows vm cse
 resource "azurerm_virtual_machine_extension" "cse" {
   count                 = var.Os_Type == "Windows" && var.script != null ? 1:0
   name                  = "custom-script-extension"
@@ -78,8 +79,8 @@ resource "azurerm_virtual_machine_extension" "cse" {
 
   settings = <<SETTINGS
     {
-      "fileUris": ["https://${var.storage_account}.blob.core.windows.net/script/${var.script}.ps1"],
-      "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File ${var.script}.ps1"
+      "fileUris": ["https://${var.storage_account}.blob.core.windows.net/script/${var.script}"],
+      "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File ${var.script}"
     }
   SETTINGS
 
@@ -88,9 +89,10 @@ resource "azurerm_virtual_machine_extension" "cse" {
     storageAccountKey  = data.azurerm_storage_account.example.primary_access_key
   })
 
+# delete = "1h15m" 삭제 후 테스트
   timeouts {
     create = "1h30m"
-    delete = "1h15m"
+    #delete = "1h15m"
   }
 }
 

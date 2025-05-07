@@ -22,11 +22,41 @@ locals {
 
   vm_list = {
 
+    # cse 변경 시 redeploy 테스트
+    # "khkim-Windows" = {
+    #     rg              = "RG-rygus"
+    #     location        = "koreacentral"
+    #     vnet            = "vnet-rygus-test"
+    #     subnet          = "sub1"
+    #     ip_address      = "10.0.1.24"
+    #     public_ip       = "PIP_NEW_WIN"
+    #     nsg             = "nsg-rygus-test"
+    #     script          = "grafana.ps1"
+
+    #     size            = "Standard_F2s_v2"
+    #     os_disk_type    = "Standard_LRS"
+    #     OsType          = "Windows"
+    #     OsImage         = "2019-datacenter"
+    #     os_disk_size    = 256
+
+    #     data_disk = {
+    #        1 = {
+    #           size      = 32
+    #           type      = "Standard_LRS"
+    #        }
+    #     }
+
+    #     tags = {
+    #         owner = "김교현",
+    #         env   = "windows"
+    #     }
+    # }
+
     # Windows VM
     # "khkim-Windows" = {
     #     rg                      = "RG-rygus-terraform"
     #     location                = "koreacentral"
-    #     vnet                    = "terraform_vnet"
+    #     vnet                    = "vnet-rygus-test"
     #     subnet                  = "sub1"
     #     ip_address              = "10.0.1.24"
     #     public_ip               = "PIP_NEW_WIN"
@@ -55,7 +85,7 @@ locals {
     # "khkim-Linux" = {
     #   rg                  = "RG-rygus-terraform"
     #   location            = "koreacentral"
-    #   vnet                = "terraform_vnet"
+    #   vnet                = "vnet-rygus-test"
     #   subnet              = "sub1"
     #   ip_address          = "10.0.1.25"
     #   public_ip           = "PIP_NEW_LINUX"
@@ -93,7 +123,7 @@ locals {
     #    VM_Type                  = "replica"
     #    rg                       = "RG-rygus-terraform"
     #    location                 = "koreacentral"
-    #    vnet                     = "terraform_vnet"
+    #    vnet                     = "vnet-rygus-test"
     #    subnet                   = "sub2"
     #    ip_address               = "10.0.2.27"
     #    public_ip                = "PIP_replica"
@@ -129,7 +159,7 @@ locals {
     #     VM_Type               = "replica"
     #     rg                    = "RG-rygus-terraform"
     #     location              = "koreacentral"
-    #     vnet                  = "terraform_vnet"
+    #     vnet                  = "vnet-rygus-test"
     #     subnet                = "sub1"
     #     ip_address            = "10.0.1.27"
     #     public_ip             = "PIP_region_replica"

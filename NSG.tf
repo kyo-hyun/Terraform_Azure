@@ -1,7 +1,7 @@
 locals {
   NSG_list = {
-    "nsg_terraform" = {
-      resource_group = "RG-rygus-terraform"
+    "nsg-rygus-test" = {
+      resource_group = "RG-rygus-test"
       location       = "koreacentral"
       nsg_rule = {
         "allow-rdp" = {

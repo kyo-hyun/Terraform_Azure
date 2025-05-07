@@ -1,8 +1,8 @@
 locals {
   vnet_list = {
-    "terraform_vnet" = {
+    "vnet-rygus-test" = {
       location       = "koreacentral"
-      resource_group = "RG-rygus-terraform"
+      resource_group = "RG-rygus"
       address_space  = ["10.0.0.0/16"]
 
       subnets = {
@@ -11,25 +11,6 @@ locals {
         }
         "sub2" = {
           address_prefixes = ["10.0.2.0/24"]
-        }
-      }
-
-      tags = {
-        owner = "김교현"
-      }
-    }
-
-    "lb-test-vnet" = {
-      location       = "koreacentral"
-      resource_group = "RG-rygus-terraform"
-      address_space  = ["10.1.0.0/16"]
-
-      subnets = {
-        "sub1" = {
-          address_prefixes = ["10.1.1.0/24"]
-        }
-        "sub2" = {
-          address_prefixes = ["10.1.2.0/24"]
         }
       }
 
