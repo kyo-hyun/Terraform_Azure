@@ -22,36 +22,6 @@ locals {
 
   vm_list = {
 
-    # cse 변경 시 redeploy 테스트
-    # "khkim-Windows" = {
-    #     rg              = "RG-rygus"
-    #     location        = "koreacentral"
-    #     vnet            = "vnet-rygus-test"
-    #     subnet          = "sub1"
-    #     ip_address      = "10.0.1.24"
-    #     public_ip       = "PIP_NEW_WIN"
-    #     nsg             = "nsg-rygus-test"
-    #     script          = "grafana.ps1"
-
-    #     size            = "Standard_F2s_v2"
-    #     os_disk_type    = "Standard_LRS"
-    #     OsType          = "Windows"
-    #     OsImage         = "2019-datacenter"
-    #     os_disk_size    = 256
-
-    #     data_disk = {
-    #        1 = {
-    #           size      = 32
-    #           type      = "Standard_LRS"
-    #        }
-    #     }
-
-    #     tags = {
-    #         owner = "김교현",
-    #         env   = "windows"
-    #     }
-    # }
-
     # Windows VM
     # "khkim-Windows" = {
     #     rg                      = "RG-rygus-terraform"
