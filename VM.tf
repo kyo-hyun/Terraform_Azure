@@ -22,6 +22,58 @@ locals {
 
   vm_list = {
 
+    "khkim-spoke01" = {
+      rg                  = "RG-rygus"
+      location            = "koreacentral"
+      vnet                = "vnet-khkim-spoke1"
+      subnet              = "snet-spoke1"
+      ip_address          = "11.0.1.25"
+      public_ip           = "PIP_back1"
+      nsg                 = "nsg-rygus-test"
+
+      size                = "Standard_F2s_v2"
+      os_disk_type        = "Standard_LRS"
+      OsType              = "ubuntu"
+      OsImage             = "22_04-lts"
+      os_disk_size        = 32
+
+      #script              = "set_apache.sh"
+
+      data_disk           = {
+
+      }
+      tags = {
+        owner = "김교현"
+      }
+      
+    }
+
+    "khkim-spoke02" = {
+      rg                  = "RG-rygus"
+      location            = "koreacentral"
+      vnet                = "vnet-khkim-spoke2"
+      subnet              = "snet-spoke2"
+      ip_address          = "12.0.1.26"
+      public_ip           = "PIP_back2"
+      nsg                 = "nsg-rygus-test"
+
+      size                = "Standard_F2s_v2"
+      os_disk_type        = "Standard_LRS"
+      OsType              = "ubuntu"
+      OsImage             = "22_04-lts"
+      os_disk_size        = 32
+
+      #script              = "set_apache.sh"
+
+      data_disk           = {
+
+      }
+      tags = {
+        owner = "김교현"
+      }
+      
+    }
+
     # Windows VM
     # "khkim-Windows" = {
     #     rg                      = "RG-rygus-terraform"
@@ -53,29 +105,23 @@ locals {
 
     # Linux VM
     # "khkim-Linux" = {
-    #   rg                  = "RG-rygus-terraform"
+    #   rg                  = "RG-rygus"
     #   location            = "koreacentral"
     #   vnet                = "vnet-rygus-test"
     #   subnet              = "sub1"
     #   ip_address          = "10.0.1.25"
     #   public_ip           = "PIP_NEW_LINUX"
-    #   nsg                 = "nsg_terraform"
+    #   nsg                 = "nsg-rygus-test"
 
     #   size                = "Standard_F2s_v2"
     #   os_disk_type        = "Standard_LRS"
     #   OsType              = "ubuntu"
     #   OsImage             = "22_04-lts"
-    #   os_disk_size        = 256
+    #   os_disk_size        = 32
 
-    #   script              = "disk_format.sh"
+    #   script              = "disk_format."
 
     #   data_disk           = {
-    #       1 = {
-    #           size            = 64
-    #           type            = "Standard_LRS"
-    #           source_vhd      = "https://khkimtest.blob.core.windows.net/vhd/DataSanp-khkim-jp-test-25-04-16-0.vhd"
-    #        }
-
     #       2 = {
     #           size            = 64
     #           type            = "Standard_LRS"

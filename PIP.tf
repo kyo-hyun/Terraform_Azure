@@ -1,40 +1,36 @@
 locals {
   pip_list = {
-    "PIP_NEW_WIN" = {
+    "PIP_spoke1" = {
       rg       = "RG-rygus"
       location = "koreacentral"
       tags = {
-        owner = "김교현",
-        os = "Windows"
+        owner = "김교현"
       }
     }
 
-    # "PIP_NEW_LINUX" = {
-    #   rg       = "RG-rygus-test"
-    #   location = "koreacentral"
-    #   tags = {
-    #     owner = "김교현",
-    #     os = "Linux"
-    #   }
-    # }
+    "PIP_spoke2" = {
+      rg       = "RG-rygus"
+      location = "koreacentral"
+      tags = {
+        owner = "김교현"
+      }
+    }
 
-    # "PIP_replica" = {
-    #   rg       = "RG-rygus-test"
-    #   location = "koreacentral"
-    #   tags = {
-    #     owner = "김교현",
-    #     os = "replica"
-    #   }
-    # }
+    "PIP_fw_mgmt" = {
+      rg       = "RG-rygus"
+      location = "koreacentral"
+      tags = {
+        owner = "김교현"
+      }
+    }
 
-    # "PIP_region_replica" = {
-    #   rg       = "RG-rygus-test"
-    #   location = "koreacentral"
-    #   tags = {
-    #     owner = "김교현",
-    #     os = "region_replica"
-    #   }
-    # }
+    "PIP_fw" = {
+      rg       = "RG-rygus"
+      location = "koreacentral"
+      tags = {
+        owner = "김교현"
+      }
+    }
   }
 }
 
@@ -44,6 +40,8 @@ module "pip" {
   name     = each.key
   rg       = each.value.rg
   location = each.value.location
+  sku      = try(each.value.sku,"Standard")
+  zone     = try(each.value.zone,null)
   tags     = each.value.tags
 
   depends_on = [module.RG]

@@ -1,7 +1,7 @@
 locals {
   NSG_list = {
     "nsg-rygus-test" = {
-      resource_group = "RG-rygus-test"
+      resource_group = "RG-rygus"
       location       = "koreacentral"
       nsg_rule = {
         "allow-rdp" = {
@@ -22,6 +22,17 @@ locals {
           protocol                   = "Tcp"
           source_port_range          = "*"
           destination_port_range     = "22"
+          source_address_prefixes    = ["211.117.84.44", "1.235.222.130"]
+          destination_address_prefix = "*"
+        }
+
+        "allow-http" = {
+          priority                   = 300
+          direction                  = "Inbound"
+          access                     = "Allow"
+          protocol                   = "Tcp"
+          source_port_range          = "*"
+          destination_port_range     = "80"
           source_address_prefixes    = ["211.117.84.44", "1.235.222.130"]
           destination_address_prefix = "*"
         }

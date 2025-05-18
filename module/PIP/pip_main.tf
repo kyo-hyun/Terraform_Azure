@@ -3,7 +3,8 @@ resource "azurerm_public_ip" "public_ip" {
   resource_group_name = var.rg
   location            = var.location
   allocation_method   = "Static"
-  sku                 = "Standard"
+  zones               = var.zone
+  sku                 = var.sku
 
   tags = var.tags
 }
