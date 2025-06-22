@@ -22,61 +22,9 @@ locals {
 
   vm_list = {
 
-    "khkim-spoke01" = {
-      rg                  = "RG-rygus"
-      location            = "koreacentral"
-      vnet                = "vnet-khkim-spoke1"
-      subnet              = "snet-spoke1"
-      ip_address          = "11.0.1.25"
-      public_ip           = "PIP_back1"
-      nsg                 = "nsg-rygus-test"
-
-      size                = "Standard_F2s_v2"
-      os_disk_type        = "Standard_LRS"
-      OsType              = "ubuntu"
-      OsImage             = "22_04-lts"
-      os_disk_size        = 32
-
-      #script              = "set_apache.sh"
-
-      data_disk           = {
-
-      }
-      tags = {
-        owner = "김교현"
-      }
-      
-    }
-
-    "khkim-spoke02" = {
-      rg                  = "RG-rygus"
-      location            = "koreacentral"
-      vnet                = "vnet-khkim-spoke2"
-      subnet              = "snet-spoke2"
-      ip_address          = "12.0.1.26"
-      public_ip           = "PIP_back2"
-      nsg                 = "nsg-rygus-test"
-
-      size                = "Standard_F2s_v2"
-      os_disk_type        = "Standard_LRS"
-      OsType              = "ubuntu"
-      OsImage             = "22_04-lts"
-      os_disk_size        = 32
-
-      #script              = "set_apache.sh"
-
-      data_disk           = {
-
-      }
-      tags = {
-        owner = "김교현"
-      }
-      
-    }
-
     # Windows VM
     # "khkim-Windows" = {
-    #     rg                      = "RG-rygus-terraform"
+    #     rg                      = "RG-KHKIM-2"
     #     location                = "koreacentral"
     #     vnet                    = "vnet-rygus-test"
     #     subnet                  = "sub1"
@@ -104,14 +52,14 @@ locals {
     # }
 
     # Linux VM
-    # "khkim-Linux" = {
-    #   rg                  = "RG-rygus"
+    # "khkim-back1" = {
+    #   rg                  = "RG-Test"
     #   location            = "koreacentral"
-    #   vnet                = "vnet-rygus-test"
-    #   subnet              = "sub1"
-    #   ip_address          = "10.0.1.25"
-    #   public_ip           = "PIP_NEW_LINUX"
-    #   nsg                 = "nsg-rygus-test"
+    #   vnet                = "vnet-khkim-hub"
+    #   subnet              = "snet-hub1"
+    #   ip_address          = "10.0.1.11"
+    #   public_ip           = "PIP_back1"
+    #   nsg                 = "NSG-Test"
 
     #   size                = "Standard_F2s_v2"
     #   os_disk_type        = "Standard_LRS"
@@ -119,25 +67,21 @@ locals {
     #   OsImage             = "22_04-lts"
     #   os_disk_size        = 32
 
-    #   script              = "disk_format."
+    #   script              = "set_apache.sh"
 
     #   data_disk           = {
-    #       2 = {
-    #           size            = 64
-    #           type            = "Standard_LRS"
-    #        }
+
     #   }
+
     #   tags = {
-    #     owner = "김교현",
-    #     env   = "Terraform"
+    #     owner = "김교현"
     #   }
-      
     # }
 
     # 동일 리전 복제 VM 
     # "khkim-replica" = {
     #    VM_Type                  = "replica"
-    #    rg                       = "RG-rygus-terraform"
+    #    rg                       = "RG-KHKIM-terraform"
     #    location                 = "koreacentral"
     #    vnet                     = "vnet-rygus-test"
     #    subnet                   = "sub2"
@@ -173,7 +117,7 @@ locals {
     # 리전 간 복제 VM
     # "khkim-region" = {
     #     VM_Type               = "replica"
-    #     rg                    = "RG-rygus-terraform"
+    #     rg                    = "RG-KHKIM-terraform"
     #     location              = "koreacentral"
     #     vnet                  = "vnet-rygus-test"
     #     subnet                = "sub1"

@@ -1,8 +1,9 @@
 locals {
   NSG_list = {
-    "nsg-rygus-test" = {
-      resource_group = "RG-rygus"
+    "NSG-Test" = {
+      resource_group = "RG-Test"
       location       = "koreacentral"
+
       nsg_rule = {
         "allow-rdp" = {
           priority                   = 100
@@ -11,7 +12,7 @@ locals {
           protocol                   = "Tcp"
           source_port_range          = "*"
           destination_port_range     = "3389"
-          source_address_prefixes    = ["211.117.84.44", "1.235.222.130"]
+          source_address_prefixes    = ["218.48.21.223", "1.235.222.130"]
           destination_address_prefix = "*"
         }
  
@@ -22,7 +23,7 @@ locals {
           protocol                   = "Tcp"
           source_port_range          = "*"
           destination_port_range     = "22"
-          source_address_prefixes    = ["211.117.84.44", "1.235.222.130"]
+          source_address_prefixes    = ["218.48.21.223", "1.235.222.130"]
           destination_address_prefix = "*"
         }
 
@@ -33,7 +34,7 @@ locals {
           protocol                   = "Tcp"
           source_port_range          = "*"
           destination_port_range     = "80"
-          source_address_prefixes    = ["211.117.84.44", "1.235.222.130"]
+          source_address_prefixes    = ["218.48.21.223", "1.235.222.130"]
           destination_address_prefix = "*"
         }
 

@@ -1,36 +1,30 @@
 locals {
   pip_list = {
-    "PIP_spoke1" = {
-      rg       = "RG-rygus"
-      location = "koreacentral"
-      tags = {
-        owner = "김교현"
-      }
-    }
+    # "PIP-AGW" = {
+    #   rg       = "RG-Test"
+    #   location = "koreacentral"
+    #   zone     = ["1","2","3"]
+    #   tags = {
+    #     owner = "김교현"
+    #   }
+    # }
 
-    "PIP_spoke2" = {
-      rg       = "RG-rygus"
-      location = "koreacentral"
-      tags = {
-        owner = "김교현"
-      }
-    }
+    # "PIP-FW" = {
+    #   rg       = "RG-Test"
+    #   location = "koreacentral"
+    #   zone     = ["1","2","3"]
+    #   tags = {
+    #     owner = "김교현"
+    #   }
+    # }
 
-    "PIP_fw_mgmt" = {
-      rg       = "RG-rygus"
-      location = "koreacentral"
-      tags = {
-        owner = "김교현"
-      }
-    }
-
-    "PIP_fw" = {
-      rg       = "RG-rygus"
-      location = "koreacentral"
-      tags = {
-        owner = "김교현"
-      }
-    }
+    # "PIP_back1" = {
+    #   rg       = "RG-Test"
+    #   location = "koreacentral"
+    #   tags = {
+    #     owner = "김교현"
+    #   }
+    # }
   }
 }
 

@@ -2,19 +2,18 @@ locals {
   vnet_list = {
     "vnet-khkim-hub" = {
       location       = "koreacentral"
-      resource_group = "RG-rygus"
+      resource_group = "RG-Test"
       address_space  = ["10.0.0.0/16"]
 
       subnets = {
         "snet-hub1" = {
           address_prefixes = ["10.0.1.0/24"]
         }
-        "snet-hub2" = {
-          address_prefixes = ["10.0.2.0/24"]
+
+        "agw-snet" = {
+           address_prefixes = ["10.0.3.0/24"]
         }
-        "gateway_subnet" = {
-          address_prefixes = ["10.0.3.0/24"]
-        }
+        
       }
 
       tags = {
@@ -22,15 +21,28 @@ locals {
       }
     }
 
-    "vnet-khkim-spoke1" = {
+    "vnet-aks-test" = {
       location       = "koreacentral"
-      resource_group = "RG-rygus"
-      address_space  = ["11.0.0.0/16"]
+      resource_group = "RG-Test"
+      address_space  = ["192.0.0.0/16"]
 
       subnets = {
-        "snet-spoke1" = {
-          address_prefixes = ["11.0.1.0/24"]
+        "snet-cluster" = {
+          address_prefixes = ["192.0.1.0/24"]
         }
+
+        "snet-kubectl" = {
+          address_prefixes = ["192.0.3.0/24"]
+        }
+
+        "snet-appgw" = {
+          address_prefixes = ["192.0.4.0/24"]
+        }
+
+        "AzureFirewallSubnet" = {
+          address_prefixes = ["192.0.5.0/24"]
+        }
+        
       }
 
       tags = {
@@ -38,21 +50,59 @@ locals {
       }
     }
 
-    "vnet-khkim-spoke2" = {
+    "vnet-aks" = {
       location       = "koreacentral"
-      resource_group = "RG-rygus"
-      address_space  = ["12.0.0.0/16"]
+      resource_group = "RG-Test"
+      address_space  = ["10.0.0.0/16"]
 
       subnets = {
-        "snet-spoke2" = {
-          address_prefixes = ["12.0.1.0/24"]
+
+        "AzureFirewallSubnet" = {
+          address_prefixes = ["10.0.5.0/24"]
         }
+
+        "snet-cluster" = {
+          address_prefixes = ["10.0.6.0/24"]
+        }
+        
       }
 
       tags = {
         owner = "김교현"
       }
     }
+
+    # "vnet-khkim-spoke1" = {
+    #   location       = "koreacentral"
+    #   resource_group = "RG-KHKIM"
+    #   address_space  = ["11.0.0.0/16"]
+
+    #   subnets = {
+    #     "snet-spoke1" = {
+    #       address_prefixes = ["11.0.1.0/24"]
+    #     }
+    #   }
+
+    #   tags = {
+    #     owner = "김교현"
+    #   }
+    # }
+
+    # "vnet-khkim-spoke2" = {
+    #   location       = "koreacentral"
+    #   resource_group = "RG-KHKIM"
+    #   address_space  = ["12.0.0.0/16"]
+
+    #   subnets = {
+    #     "snet-spoke2" = {
+    #       address_prefixes = ["12.0.1.0/24"]
+    #     }
+    #   }
+
+    #   tags = {
+    #     owner = "김교현"
+    #   }
+    # }
 
   }
 }

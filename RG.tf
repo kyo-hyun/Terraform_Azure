@@ -1,6 +1,6 @@
 locals {
   rg_list = {
-    "RG-rygus" = {
+    "RG-Test" = {
       location = "koreacentral"
     }
   }
