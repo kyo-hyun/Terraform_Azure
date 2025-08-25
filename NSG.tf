@@ -1,9 +1,9 @@
 locals {
   NSG_list = {
-    "NSG-Test" = {
-      resource_group = "RG-Test"
+    "nsg-rygus-test" = {
+      resource_group = "RG-KHKIM"
       location       = "koreacentral"
-
+      
       nsg_rule = {
         "allow-rdp" = {
           priority                   = 100
@@ -38,6 +38,28 @@ locals {
           destination_address_prefix = "*"
         }
 
+        "allow-http" = {
+          priority                   = 400
+          direction                  = "Inbound"
+          access                     = "Allow"
+          protocol                   = "Tcp"
+          source_port_range          = "*"
+          destination_port_range     = "80"
+          source_address_prefixes    = ["218.48.21.223", "1.235.222.130"]
+          destination_address_prefix = "*"
+        }
+
+        "allow-icmp" = {
+          priority                   = 500
+          direction                  = "Inbound"
+          access                     = "Allow"
+          protocol                   = "Icmp"
+          source_port_range          = "*"
+          destination_port_range     = "*"
+          source_address_prefixes    = ["218.48.21.223", "1.235.222.130"]
+          destination_address_prefix = "*"
+        }
+
       }
       tags = {
         owner = "김교현"
@@ -56,3 +78,4 @@ module "NSG" {
 
   depends_on = [module.RG]
 }
+

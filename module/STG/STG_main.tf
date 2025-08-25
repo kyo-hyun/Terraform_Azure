@@ -6,8 +6,4 @@ resource "azurerm_storage_account" "example" {
   account_replication_type          = var.account_replication_type         
   infrastructure_encryption_enabled = var.infrastructure_encryption_enabled
   https_traffic_only_enabled        = var.https_traffic_only_enabled       
-
-  tags = {
-    environment = "dev"
-  }
 }

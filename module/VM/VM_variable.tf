@@ -10,6 +10,10 @@ variable "rg" {
     default = null
 }
 
+variable "ip_forwarding" {
+    default = null
+}
+
 variable "location" {
     default = null
 }
@@ -83,6 +87,10 @@ variable "os_profile" {
 }
 
 variable "data_disk" {
+    default = null
+}
+
+variable "outbound_type" {
     default = null
 }
 

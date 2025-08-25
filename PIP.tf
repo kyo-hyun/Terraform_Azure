@@ -1,30 +1,47 @@
 locals {
   pip_list = {
-    # "PIP-AGW" = {
-    #   rg       = "RG-Test"
+
+    "PIP-AGW" = {
+      rg       = "RG-KHKIM"
+      location = "koreacentral"
+      zone     = ["1","2","3"]
+      tags = {
+        owner = "김교현"
+      }
+    }
+
+    # "PIP-fw-pip" = {
+    #   rg       = "RG-KHKIM"
     #   location = "koreacentral"
-    #   zone     = ["1","2","3"]
     #   tags = {
     #     owner = "김교현"
     #   }
     # }
 
-    # "PIP-FW" = {
-    #   rg       = "RG-Test"
+    # "PIP-fw-mgmt-pip" = {
+    #   rg       = "RG-KHKIM"
     #   location = "koreacentral"
-    #   zone     = ["1","2","3"]
     #   tags = {
     #     owner = "김교현"
     #   }
     # }
 
-    # "PIP_back1" = {
-    #   rg       = "RG-Test"
-    #   location = "koreacentral"
-    #   tags = {
-    #     owner = "김교현"
-    #   }
-    # }
+    "PIP-web1" = {
+      rg       = "RG-KHKIM"
+      location = "koreacentral"
+      tags = {
+        owner = "김교현"
+      }
+    }
+
+    "PIP-Hub" = {
+      rg       = "RG-KHKIM"
+      location = "koreacentral"
+      tags = {
+        owner = "김교현"
+      }
+    }
+
   }
 }
 

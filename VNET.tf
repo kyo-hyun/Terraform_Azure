@@ -1,48 +1,36 @@
 locals {
+
   vnet_list = {
+
     "vnet-khkim-hub" = {
       location       = "koreacentral"
-      resource_group = "RG-Test"
-      address_space  = ["10.0.0.0/16"]
+      resource_group = "RG-KHKIM"
+      address_space  = ["10.0.0.0/24"]
 
       subnets = {
-        "snet-hub1" = {
-          address_prefixes = ["10.0.1.0/24"]
-        }
-
-        "agw-snet" = {
-           address_prefixes = ["10.0.3.0/24"]
-        }
-        
-      }
-
-      tags = {
-        owner = "김교현"
-      }
-    }
-
-    "vnet-aks-test" = {
-      location       = "koreacentral"
-      resource_group = "RG-Test"
-      address_space  = ["192.0.0.0/16"]
-
-      subnets = {
-        "snet-cluster" = {
-          address_prefixes = ["192.0.1.0/24"]
-        }
-
-        "snet-kubectl" = {
-          address_prefixes = ["192.0.3.0/24"]
-        }
-
-        "snet-appgw" = {
-          address_prefixes = ["192.0.4.0/24"]
-        }
-
         "AzureFirewallSubnet" = {
-          address_prefixes = ["192.0.5.0/24"]
+          address_prefixes = ["10.0.0.0/26"]
         }
-        
+
+        "lb-subnet" = {
+          address_prefixes = ["10.0.0.64/28"]
+        }
+
+        "aks-node-subnet" = {
+          address_prefixes = ["10.0.0.128/27"]
+        }
+
+        "backend-subnet" = {
+          address_prefixes = ["10.0.0.160/29"]
+        }
+
+        "agw-subnet" = {
+          address_prefixes = ["10.0.0.168/29"]
+        }
+
+        "aks-api-subnet" = {
+          address_prefixes = ["10.0.0.224/27"]
+        }
       }
 
       tags = {
@@ -50,61 +38,73 @@ locals {
       }
     }
 
-    "vnet-aks" = {
+    "vnet-khkim-spoke" = {
       location       = "koreacentral"
-      resource_group = "RG-Test"
-      address_space  = ["10.0.0.0/16"]
+      resource_group = "RG-KHKIM"
+      address_space  = ["12.0.0.0/16"]
 
       subnets = {
-
-        "AzureFirewallSubnet" = {
-          address_prefixes = ["10.0.5.0/24"]
+        "aks-cluster-subnet" ={
+          address_prefixes = ["12.0.2.0/24"]
         }
 
-        "snet-cluster" = {
-          address_prefixes = ["10.0.6.0/24"]
+        "aks-lb-subnet" ={
+          address_prefixes = ["12.0.3.0/24"]
         }
-        
+
+        "test-vm-subnet" ={
+          address_prefixes = ["12.0.4.0/24"]
+        }
+
+        "AzureFirewallSubnet" ={
+          address_prefixes = ["12.0.5.0/24"]
+        }
       }
 
       tags = {
         owner = "김교현"
       }
     }
+    
+    "vnet-hub" = {
+          location       = "koreacentral"
+          resource_group = "RG-KHKIM"
+          address_space  = ["11.0.0.0/24"]
 
-    # "vnet-khkim-spoke1" = {
-    #   location       = "koreacentral"
-    #   resource_group = "RG-KHKIM"
-    #   address_space  = ["11.0.0.0/16"]
+          subnets = {
+            "GatewaySubnet" ={
+              address_prefixes = ["11.0.0.0/26"]
+            }
 
-    #   subnets = {
-    #     "snet-spoke1" = {
-    #       address_prefixes = ["11.0.1.0/24"]
-    #     }
-    #   }
+            "vm-subnet" ={
+              address_prefixes = ["11.0.0.64/28"]
+            }
+          }
 
-    #   tags = {
-    #     owner = "김교현"
-    #   }
-    # }
+          tags = {
+            owner = "김교현"
+          }
+        }
 
-    # "vnet-khkim-spoke2" = {
-    #   location       = "koreacentral"
-    #   resource_group = "RG-KHKIM"
-    #   address_space  = ["12.0.0.0/16"]
 
-    #   subnets = {
-    #     "snet-spoke2" = {
-    #       address_prefixes = ["12.0.1.0/24"]
-    #     }
-    #   }
+    "vnet-spoke" = {
+          location       = "koreacentral"
+          resource_group = "RG-KHKIM"
+          address_space  = ["12.0.0.0/24"]
 
-    #   tags = {
-    #     owner = "김교현"
-    #   }
-    # }
+          subnets = {
+            "vm-subnet" ={
+              address_prefixes = ["12.0.0.0/28"]
+            }
+          }
+
+          tags = {
+            owner = "김교현"
+          }
+    }
 
   }
+
 }
 
 module "vnet" {

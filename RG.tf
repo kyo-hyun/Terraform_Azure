@@ -1,6 +1,6 @@
 locals {
   rg_list = {
-    "RG-Test" = {
+    "RG-KHKIM" = {
       location = "koreacentral"
     }
   }

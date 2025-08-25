@@ -4,12 +4,14 @@ locals {
 }
 
 resource "azurerm_kubernetes_cluster" "aks_test2" {
-  name                    = var.name
-  location                = var.location
-  resource_group_name     = var.resource_group
-  dns_prefix              = "aks-test-khkim"
-
-  kubernetes_version      = var.kube_version
+  name                            = var.name
+  location                        = var.location
+  resource_group_name             = var.resource_group
+  dns_prefix                      = "aks-test-khkim"
+        
+  kubernetes_version              = var.kube_version
+        
+  private_cluster_enabled         = var.private_cluster_enabled
 
   default_node_pool {
     name                  = local.system_node_pool_key
@@ -28,7 +30,8 @@ resource "azurerm_kubernetes_cluster" "aks_test2" {
     network_plugin_mode   = var.network_plugin_mode
     network_policy        = var.network_policy     
     service_cidr          = var.service_cidr       
-    dns_service_ip        = var.dns_service_ip     
+    dns_service_ip        = var.dns_service_ip
+    outbound_type         = var.outbound_type
   }
 
   linux_profile {

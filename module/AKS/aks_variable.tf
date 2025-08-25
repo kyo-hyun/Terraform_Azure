@@ -2,7 +2,15 @@ variable "name" {
     default = null
 }
 
+variable "private_cluster_enabled" {
+    default = null
+}
+
 variable "kube_version" {
+    default = null
+}
+
+variable "outbound_type" {
     default = null
 }
 

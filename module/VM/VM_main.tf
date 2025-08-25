@@ -21,6 +21,7 @@ resource "azurerm_network_interface" "nic" {
   location                        = var.location
   resource_group_name             = var.rg
   accelerated_networking_enabled  = true
+  ip_forwarding_enabled           = var.ip_forwarding
 
   ip_configuration {
     name                          = "Ipconfiguration-${var.name}"
@@ -131,6 +132,12 @@ resource "azurerm_linux_virtual_machine" "vm_linux" {
     offer                   = var.os_image.offer
     sku                     = var.sku
     version                 = "latest"
+  }
+
+  lifecycle {
+    ignore_changes = [
+      custom_data
+    ]
   }
 
   tags = var.tags

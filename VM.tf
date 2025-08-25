@@ -22,9 +22,187 @@ locals {
 
   vm_list = {
 
+    # "vm-spoke" = {
+    #   rg                  = "RG-KHKIM"
+    #   location            = "koreacentral"
+    #   vnet                = "vnet-spoke"
+    #   subnet              = "vm-subnet"
+    #   ip_address          = "12.0.0.5"
+    #   public_ip           = "PIP-web1"
+    #   nsg                 = "nsg-rygus-test"
+
+    #   size                = "Standard_F2s_v2"
+    #   os_disk_type        = "Standard_LRS"
+    #   OsType              = "ubuntu"
+    #   OsImage             = "22_04-lts"
+    #   os_disk_size        = 32
+
+    #   #script              = "set_apache.sh"
+
+    #   data_disk           = {
+
+    #   }
+    #   tags = {
+    #     owner = "김교현"
+    #   }
+    # }
+
+    "vm-windows" = {
+      rg                  = "RG-KHKIM"
+      location            = "koreacentral"
+      vnet                = "vnet-hub"
+      subnet              = "vm-subnet"
+      ip_address          = "11.0.0.69"
+      public_ip           = "PIP-Hub"
+      nsg                 = "nsg-rygus-test"
+
+      size                = "Standard_F2s_v2"
+      os_disk_type        = "Standard_LRS"
+      OsType              = "Windows"
+      OsImage             = "2019-datacenter"
+      os_disk_size        = 128
+
+      #script              = "set_apache.sh"
+
+      data_disk           = {
+
+      }
+
+      tags = {
+        owner = "김교현"
+      }
+    }
+
+    # "windows-hub" = {
+    #   rg                  = "RG-KHKIM"
+    #   location            = "koreacentral"
+    #   vnet                = "vnet-khkim-hub"
+    #   subnet              = "backend-subnet"
+    #   ip_address          = "10.0.0.165"
+    #   public_ip           = "PIP-back1"
+    #   nsg                 = "nsg-rygus-test"
+
+    #   size                = "Standard_F2s_v2"
+    #   os_disk_type        = "Standard_LRS"
+    #   OsType              = "Windows"
+    #   OsImage             = "2019-datacenter"
+    #   os_disk_size        = 128
+
+    #   #script              = "set_apache.sh"
+
+    #   data_disk           = {
+
+    #   }
+    #   tags = {
+    #     owner = "김교현"
+    #   }
+    # }
+
+    # "KHKIM-DNAT" = {
+    #   rg                  = "RG-KHKIM"
+    #   location            = "koreacentral"
+    #   vnet                = "vnet-khkim-hub"
+    #   subnet              = "backend-subnet"
+    #   ip_address          = "10.0.0.166"
+    #   public_ip           = "PIP-NAT"
+    #   nsg                 = "nsg-rygus-test"
+    #   ip_forwarding       = true
+
+    #   size                = "Standard_F2s_v2"
+    #   os_disk_type        = "Standard_LRS"
+    #   OsType              = "ubuntu"
+    #   OsImage             = "22_04-lts"
+    #   os_disk_size        = 32
+
+    #   #script              = "set_apache.sh"
+
+    #   data_disk           = {
+
+    #   }
+    #   tags = {
+    #     owner = "김교현"
+    #   }
+    # }
+
+    # "KHKIM-backend" = {
+    #   rg                  = "RG-KHKIM"
+    #   location            = "koreacentral"
+    #   vnet                = "vnet-khkim-hub"
+    #   subnet              = "backend-subnet"
+    #   ip_address          = "10.0.0.165"
+    #   #public_ip           = "PIP-back2"
+    #   nsg                 = "nsg-rygus-test"
+
+    #   size                = "Standard_F2s_v2"
+    #   os_disk_type        = "Standard_LRS"
+    #   OsType              = "ubuntu"
+    #   OsImage             = "22_04-lts"
+    #   os_disk_size        = 32
+
+    #   #script              = "set_apache.sh"
+
+    #   data_disk           = {
+
+    #   }
+    #   tags = {
+    #     owner = "김교현"
+    #   }
+    # }
+
+    # "windows-spoke" = {
+    #   rg                  = "RG-KHKIM"
+    #   location            = "koreacentral"
+    #   vnet                = "vnet-khkim-spoke"
+    #   subnet              = "test-vm-subnet"
+    #   ip_address          = "12.0.4.101"
+    #   public_ip           = "PIP-fw-pip"
+    #   nsg                 = "nsg-rygus-test"
+
+    #   size                = "Standard_F2s_v2"
+    #   os_disk_type        = "Standard_LRS"
+    #   OsType              = "Windows"
+    #   OsImage             = "2019-datacenter"
+    #   os_disk_size        = 128
+
+    #   # script              = "set_apache.sh"
+
+    #   data_disk           = {
+
+    #   }
+    #   tags = {
+    #     owner = "김교현"
+    #   }
+    # }
+
+    # "khkim-test" = {
+    #   rg                  = "RG-KHKIM"
+    #   location            = "koreacentral"
+    #   vnet                = "vnet-khkim-hub"
+    #   subnet              = "snet-hub1"
+    #   ip_address          = "10.0.1.25"
+    #   #public_ip           = "pip_nat"
+    #   nsg                 = "nsg-rygus-test"
+
+    #   size                = "Standard_F2s_v2"
+    #   os_disk_type        = "Standard_LRS"
+    #   OsType              = "ubuntu"
+    #   OsImage             = "22_04-lts"
+    #   os_disk_size        = 32
+
+    #   #script              = "nat.sh"
+
+    #   data_disk           = {
+
+    #   }
+    #   tags = {
+    #     owner = "김교현"
+    #   }
+      
+    # }
+
     # Windows VM
     # "khkim-Windows" = {
-    #     rg                      = "RG-KHKIM-2"
+    #     rg                      = "RG-KHKIM-terraform"
     #     location                = "koreacentral"
     #     vnet                    = "vnet-rygus-test"
     #     subnet                  = "sub1"
@@ -52,14 +230,14 @@ locals {
     # }
 
     # Linux VM
-    # "khkim-back1" = {
-    #   rg                  = "RG-Test"
+    # "khkim-Linux" = {
+    #   rg                  = "RG-KHKIM"
     #   location            = "koreacentral"
-    #   vnet                = "vnet-khkim-hub"
-    #   subnet              = "snet-hub1"
-    #   ip_address          = "10.0.1.11"
-    #   public_ip           = "PIP_back1"
-    #   nsg                 = "NSG-Test"
+    #   vnet                = "vnet-rygus-test"
+    #   subnet              = "sub1"
+    #   ip_address          = "10.0.1.25"
+    #   public_ip           = "PIP_NEW_LINUX"
+    #   nsg                 = "nsg-rygus-test"
 
     #   size                = "Standard_F2s_v2"
     #   os_disk_type        = "Standard_LRS"
@@ -67,15 +245,19 @@ locals {
     #   OsImage             = "22_04-lts"
     #   os_disk_size        = 32
 
-    #   script              = "set_apache.sh"
+    #   script              = "disk_format."
 
     #   data_disk           = {
-
+    #       2 = {
+    #           size            = 64
+    #           type            = "Standard_LRS"
+    #        }
     #   }
-
     #   tags = {
-    #     owner = "김교현"
+    #     owner = "김교현",
+    #     env   = "Terraform"
     #   }
+      
     # }
 
     # 동일 리전 복제 VM 
@@ -165,6 +347,7 @@ module "azure_vm" {
   nsg_id              = module.NSG[each.value.nsg].get_nsg_id
   storage_account     = local.boot_storageaccount.boot_diagsa
   storage_account_rg  = local.boot_storageaccount.boot_diagsa_rg
+  ip_forwarding       = try(each.value.ip_forwarding, false)
   size                = each.value.size
   os_disk_type        = each.value.os_disk_type
   script              = try(each.value.script,null)
