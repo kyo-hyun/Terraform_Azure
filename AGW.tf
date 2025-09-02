@@ -3,7 +3,7 @@ locals {
         "skax-int-hub-agw" = {
             rg                      = "RG-KHKIM"
             location                = "koreacentral"
-            identity_ids            = ["/subscriptions/122a2e7e-7d1a-4b2d-a26c-0a156dfa583c/resourceGroups/smjung-rg/providers/Microsoft.ManagedIdentity/userAssignedIdentities/mgid-koreacentral-smjung"]
+            identity_ids            = [""]
             vnet                    = "vnet-khkim-hub"
             subnet                  = "agw-subnet"
             #public_ip               = "PIP-AGW"
