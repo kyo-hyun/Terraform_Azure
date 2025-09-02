@@ -1,48 +1,14 @@
-# resource "azurerm_web_application_firewall_policy" "waf_policy" {
-#   name                = var.waf_policy_name
-#   resource_group_name = var.rg
-#   location            = var.location
-
-#   policy_settings {
-#     enabled            = true
-#     mode               = "Prevention"
-#     file_upload_limit_in_mb = 100
-#     request_body_check = true
-#     max_request_body_size_in_kb = 128
-#   }
-
-#     managed_rules {
-#     managed_rule_set {
-#       type    = "OWASP"
-#       version = "3.1"
-#     }
-#   }
-
-#   dynamic "custom_rule" {
-#     for_each = var.custom_waf_rule_name != null ? [1] : []
-#     content {
-#       name     = var.custom_waf_rule_name
-#       priority = var.custom_waf_rule_priority
-#       rule_type = "MatchRule"
-#       action   = var.custom_waf_rule_action
-
-#       match_condition {
-#         match_variables {
-#           variable_name = "RemoteAddr"
-#         }
-#         operator     = "IPMatch"
-#         negation_condition = false
-#         match_values       = var.custom_waf_rule_ip_addresses
-#       }
-#     }
-#   }
-# }
-
 resource "azurerm_application_gateway" "myagw" {
   name                = var.name
   resource_group_name = var.rg
   location            = var.location
   zones               = ["1","2","3"]
+
+  ssl_policy {
+    policy_type          = var.ssl_policy.policy_type
+    min_protocol_version = var.ssl_policy.min_protocol_version
+    cipher_suites        = var.ssl_policy.cipher_suites
+  }
 
   sku {
     name     = var.sku.name
@@ -64,14 +30,22 @@ resource "azurerm_application_gateway" "myagw" {
   }
 
   frontend_port {
-    name = "frontend_port_name"
+    name = "frontend_port_https"
     port = 443
+  }
+
+  frontend_port {
+    name = "frontend_port_http"
+    port = 80
   }
 
   # public frontend
   frontend_ip_configuration {
-    name                 = "appGwPublicFrontendIpIPv4"
-    public_ip_address_id = var.public_ip
+    for_each = var.public_ip != null ? [1] : []
+    content {
+      name                 = "appGwPublicFrontendIpIPv4"
+      public_ip_address_id = var.public_ip
+    }
   }
 
   # private frontend
@@ -139,12 +113,12 @@ resource "azurerm_application_gateway" "myagw" {
     for_each = var.http_listeners
     content {
       name                           = http_listener.value.name
-      frontend_ip_configuration_name = "appGwPublicFrontendIpIPv4"
-      frontend_port_name             = "frontend_port_name"
+      frontend_ip_configuration_name = http_listener.value.frontend_ip_type == "public" ? "appGwPublicFrontendIpIPv4" : "appGwPrivateFrontendIpIPv4"
+      frontend_port_name             = http_listener.value.port == 80 ? "frontend_port_http" : "frontend_port_https"
       host_name                      = lookup(http_listener.value, "host_name", null)
       host_names                     = lookup(http_listener.value, "host_names", null)
-      protocol                       = http_listener.value.ssl_certificate_name == null ? "Http" : "Https"
-      ssl_certificate_name           = http_listener.value.ssl_certificate_name
+      protocol                       = http_listener.value.port == 80 ? "Http" : "Https"
+      ssl_certificate_name           = lookup(http_listener.value, "ssl_certificate_name", null)
     }
   }
 
@@ -154,9 +128,21 @@ resource "azurerm_application_gateway" "myagw" {
       name                        = request_routing_rule.value.name
       rule_type                   = lookup(request_routing_rule.value, "rule_type", "Basic")
       http_listener_name          = request_routing_rule.value.http_listener_name
-      backend_address_pool_name   = request_routing_rule.value.backend_address_pool_name
-      backend_http_settings_name  = request_routing_rule.value.backend_http_settings_name
+      backend_address_pool_name   = lookup(request_routing_rule.value, "backend_address_pool_name",null)
+      backend_http_settings_name  = lookup(request_routing_rule.value, "backend_http_settings_name",null)
+      redirect_configuration_name = lookup(request_routing_rule.value, "redirect_configuration_name",null)
       priority                    = request_routing_rule.value.priority
+    }
+  }
+
+  dynamic "redirect_configuration" {
+    for_each = var.redirect_configuration
+    content {
+      name                 = redirect_configuration.value.name
+      redirect_type        = redirect_configuration.value.redirect_type
+      include_path         = redirect_configuration.value.include_path
+      include_query_string = redirect_configuration.value.include_query_string
+      target_listener_name = redirect_configuration.value.target_listener_name
     }
   }
 
@@ -171,8 +157,9 @@ resource "azurerm_application_gateway" "myagw" {
       timeout                                   = lookup(probe.value, "timeout", 30)
       unhealthy_threshold                       = lookup(probe.value, "unhealthy_threshold", 3)
       port                                      = lookup(probe.value, "port", 443)
-      #pick_host_name_from_backend_http_settings = lookup(probe.value, "pick_host_name_from_backend_http_settings", false)
-      #minimum_servers                           = lookup(probe.value, "minimum_servers", 0)
+      match {
+        status_code = lookup(probe.value, "status_codes", null)
+      }
     }
   }
 
@@ -184,5 +171,5 @@ resource "azurerm_application_gateway" "myagw" {
     }
   }
 
-  firewall_policy_id = var.waf_policy_id
-  }
+  firewall_policy_id = var.waf_policy_id == null ? null : var.waf_policy_id
+}

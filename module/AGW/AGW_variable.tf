@@ -10,6 +10,10 @@ variable "location" {
     default = null
 }
 
+variable "ssl_policy" {
+    default = null
+}
+
 variable "subnet" {
     default = null
 }
@@ -77,6 +81,10 @@ variable "custom_waf_rule_priority" {
 variable "custom_waf_rule_action" {
   description = "The action of the custom WAF rule (e.g., Allow, Block, Log)."
   type        = string
+  default     = null
+}
+
+variable "redirect_configuration" {
   default     = null
 }
 
