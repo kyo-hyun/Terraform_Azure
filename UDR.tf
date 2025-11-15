@@ -1,53 +1,112 @@
-# locals {
-#   udr_list = {
-#     "udr-agw" = {
-#       resource_group = "RG-KHKIM"
-#       location       = "koreacentral"
+locals {
+  udr_list = {
+    
+    # "lb-udr" = {
+    #   resource_group = "KHKIM_RG"
+    #   location       = "koreacentral"
 
-#       subnets = {
-#         "vnet-khkim-hub" = "agw-subnet"
-#       }
+    #   route = {
+    #     "udr-aks-to-fw" = {
+    #       address_prefix          = "0.0.0.0/0"
+    #       next_hop_type           = "VirtualAppliance"
+    #       next_hop_in_ip_address  = "10.0.0.4"
+    #     }
+    #     "udr-1" = {
+    #       address_prefix          = "22.0.0.0/24"
+    #       next_hop_type           = "Internet"
+    #     }
+    #   }
+    # }
 
-#       route = {
-#         "udr-agw-to-lb-via-fw" = {
-#           address_prefix          = "12.0.3.0/24"
-#           next_hop_type           = "VirtualAppliance"
-#           next_hop_in_ip_address  = "10.0.0.4"
-#         }
-#       }
-#     }
+    # "aks-node-udr" = {
+    #   resource_group = "KHKIM_RG"
+    #   location       = "koreacentral"
 
-#     "udr-aks" = {
-#       resource_group = "RG-KHKIM"
-#       location       = "koreacentral"
-      
-#       subnets = {
-#         "vnet-khkim-spoke" = "aks-cluster-subnet"
-#       }
+    #   route = {
+    #     "udr-aks-to-fw" = {
+    #       address_prefix          = "0.0.0.0/0"
+    #       next_hop_type           = "VirtualAppliance"
+    #       next_hop_in_ip_address  = "10.0.0.4"
+    #     }
+    #   }
+    # }
 
-#       route = {
-#         "udr-aks-to-fw" = {
-#           address_prefix          = "0.0.0.0/0"
-#           next_hop_type           = "VirtualAppliance"
-#           next_hop_in_ip_address  = "10.0.0.4"
-#         }
-#       }
-#     }
-#   }
-# }
+    # "backend-udr" = {
+    #   resource_group = "KHKIM_RG"
+    #   location       = "koreacentral"
 
-# module "udr" {
-#   source    = "./module/UDR"
-#   for_each  = local.udr_list
+    #   route = {
+    #     "udr-aks-to-fw" = {
+    #       address_prefix          = "0.0.0.0/0"
+    #       next_hop_type           = "VirtualAppliance"
+    #       next_hop_in_ip_address  = "10.0.0.4"
+    #     }
+    #   }
+    # }
+
+    # "agw-udr" = {
+    #   resource_group = "KHKIM_RG"
+    #   location       = "koreacentral"
+
+    #   route = {
+    #     "udr-aks-to-fw" = {
+    #       address_prefix          = "0.0.0.0/0"
+    #       next_hop_type           = "VirtualAppliance"
+    #       next_hop_in_ip_address  = "10.0.0.4"
+    #     }
+    #   }
+    # }
+
+    # "aks-api-udr" = {
+    #   resource_group = "KHKIM_RG"
+    #   location       = "koreacentral"
+
+    #   route = {
+    #     "udr-aks-to-fw" = {
+    #       address_prefix          = "0.0.0.0/0"
+    #       next_hop_type           = "VirtualAppliance"
+    #       next_hop_in_ip_address  = "10.0.0.4"
+    #     }
+    #   }
+    # }
+
+    # "vm-udr" = {
+    #   resource_group = "KHKIM_RG"
+    #   location       = "koreacentral"
+
+    #   route = {
+    #     "udr-aks-to-fw" = {
+    #       address_prefix          = "0.0.0.0/0"
+    #       next_hop_type           = "VirtualAppliance"
+    #       next_hop_in_ip_address  = "10.0.0.4"
+    #     }
+    #   }
+    # }
+
+    # "vm2-udr" = {
+    #   resource_group = "KHKIM_RG"
+    #   location       = "koreacentral"
+
+    #   route = {
+    #     "udr-aks-to-fw" = {
+    #       address_prefix          = "0.0.0.0/0"
+    #       next_hop_type           = "VirtualAppliance"
+    #       next_hop_in_ip_address  = "10.0.0.4"
+    #     }
+    #   }
+    # }
+    
+  }
+}
+
+module "UDR" {
+  source    = "./module/UDR"
+  for_each  = local.udr_list
   
-#   name           = each.key
-#   resource_group = each.value.resource_group
-#   location       = each.value.location
-#   route          = each.value.route
-#   subnets = {
-#     for vnet_name, subnet_name in each.value.subnets : 
-#       vnet_name => module.vnet[vnet_name].get_subnet_id[subnet_name]
-#   }
+  name           = each.key
+  resource_group = each.value.resource_group
+  location       = each.value.location
+  route          = each.value.route
 
-#   depends_on = [module.RG]
-# }
+  depends_on = [module.RG]
+}

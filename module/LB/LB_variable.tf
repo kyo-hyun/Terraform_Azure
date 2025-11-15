@@ -10,11 +10,11 @@ variable "location" {
     default = null
 }
 
-variable "subnet" {
+variable "frontend_ip" {
     default = null
 }
 
-variable "private_ip" {
+variable "public_type" {
     default = null
 }
 
@@ -23,5 +23,17 @@ variable "sku" {
 }
 
 variable "backend_pool" {
+    default = null
+}
+
+variable "health_probe" {
+    default = null
+}
+
+variable "lb_rule" {
+    default = null
+}
+
+variable "tags" {
     default = null
 }

@@ -25,7 +25,7 @@ locals {
 
                         "Allow-aks-to-all" = { 
                             protocols             = ["TCP","UDP"]
-                            source_addresses      = ["12.0.2.0/24"]
+                            source_addresses      = ["10.0.2.0/24"]
                             destination_addresses = ["0.0.0.0/0"]
                             destination_ports     = ["*"]
                         }

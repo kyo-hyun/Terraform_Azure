@@ -50,7 +50,7 @@ variable "request_routing_rules" {
     default = null
 }
 
-variable "http_listeners" {
+variable "listeners" {
     default = null
 }
 

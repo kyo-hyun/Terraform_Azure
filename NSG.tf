@@ -1,9 +1,9 @@
 locals {
   NSG_list = {
     "nsg-rygus-test" = {
-      resource_group = "RG-KHKIM"
+      resource_group = "khkim_rg"
       location       = "koreacentral"
-      
+
       nsg_rule = {
         "allow-rdp" = {
           priority                   = 100
@@ -15,7 +15,7 @@ locals {
           source_address_prefixes    = ["218.48.21.223", "1.235.222.130"]
           destination_address_prefix = "*"
         }
- 
+
         "allow-ssh" = {
           priority                   = 200
           direction                  = "Inbound"
@@ -33,18 +33,7 @@ locals {
           access                     = "Allow"
           protocol                   = "Tcp"
           source_port_range          = "*"
-          destination_port_range     = "80"
-          source_address_prefixes    = ["218.48.21.223", "1.235.222.130"]
-          destination_address_prefix = "*"
-        }
-
-        "allow-http" = {
-          priority                   = 400
-          direction                  = "Inbound"
-          access                     = "Allow"
-          protocol                   = "Tcp"
-          source_port_range          = "*"
-          destination_port_range     = "80"
+          destination_port_range     = "800"
           source_address_prefixes    = ["218.48.21.223", "1.235.222.130"]
           destination_address_prefix = "*"
         }

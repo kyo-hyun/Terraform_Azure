@@ -5,3 +5,7 @@ variable "name" {
 variable "location" {
     default = null
 }
+
+variable "tags" {
+    default = null
+}

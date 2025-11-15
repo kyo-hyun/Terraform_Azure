@@ -1,9 +1,8 @@
-# Peering from VNet A to VNet B
 resource "azurerm_virtual_network_peering" "a_to_b" {
-  name                          = "peer-a-to-b"
-  resource_group_name           = var.rg_name
-  virtual_network_name          = azurerm_virtual_network.vnet_a.name
-  remote_virtual_network_id     = azurerm_virtual_network.vnet_b.id
+  name                          = "peer-${var.local_vnet}-to-${var.remote_vnet}"
+  resource_group_name           = var.local_vnet_rg
+  virtual_network_name          = var.local_vnet
+  remote_virtual_network_id     = var.remote_vnet_id
 
   allow_virtual_network_access  = true
   allow_forwarded_traffic       = true
@@ -11,15 +10,13 @@ resource "azurerm_virtual_network_peering" "a_to_b" {
   use_remote_gateways           = false
 }
 
-# Peering from VNet B to VNet A
-resource "azurerm_virtual_network_peering" "b_to_a" {
-  name                          = "peer-b-to-a"
-  resource_group_name           = var.rg_name
-  virtual_network_name          = azurerm_virtual_network.vnet_b.name
-  remote_virtual_network_id     = azurerm_virtual_network.vnet_a.id
+resource "azurerm_virtual_network_peering" "spoke_to_hub" {
+  name                         = "peer-${var.remote_vnet}-to-${var.local_vnet}"
+  resource_group_name          = var.remote_vnet_rg
+  virtual_network_name         = var.remote_vnet
+  remote_virtual_network_id    = var.local_vnet_id
 
-  allow_virtual_network_access  = true
-  allow_forwarded_traffic       = true
-  allow_gateway_transit         = false
-  use_remote_gateways           = false
+  allow_virtual_network_access = true
+  allow_forwarded_traffic      = true
+  use_remote_gateways          = false
 }

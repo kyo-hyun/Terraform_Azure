@@ -1,45 +1,60 @@
-# locals {
-#     aks_list = {
-#         "AKS-Test" = {
-#             kube_version                    = "1.31.8"
+locals {
+    aks_list = {
+        "khkim-aks" = {
+            kube_version                    = "1.31.8"
 
-#             resource_group                  = "RG-KHKIM"
-#             location                        = "koreacentral"
-#             vnet                            = "vnet-khkim-spoke"
-#             subnet                          = "aks-cluster-subnet"
-#             outbound_type                   = "loadBalancer"
-#             private_cluster_enabled         = false
+            resource_group                  = "RG-KHKIM"
+            location                        = "koreacentral"
+            vnet                            = "vnet-khkim-hub"
+            subnet                          = "aks-node-subnet"
+            outbound_type                   = "loadBalancer"
+            private_cluster_enabled         = false
+            user_assigned_identity_ids      = ["/subscriptions/122a2e7e-7d1a-4b2d-a26c-0a156dfa583c/resourceGroups/smjung-rg/providers/Microsoft.ManagedIdentity/userAssignedIdentities/mgid-koreacentral-smjung"]
 
-#             # k8s network
-#             network_plugin                  = "azure"
-#             network_plugin_mode             = "overlay"
-#             network_policy                  = "azure"
-#             service_cidr                    = "11.0.0.0/16"
-#             dns_service_ip                  = "11.0.0.10"
+            # k8s network
+            network_plugin                  = "azure"
+            network_plugin_mode             = "overlay"
+            network_policy                  = "azure"
+            service_cidr                    = "172.20.4.0/22"
+            dns_service_ip                  = "172.20.4.10"
+            dns_prefix                      = "khkim-aks"
 
-#             # system nodepool
-#             system_node_pool = {
-#                 "systempool" = {
-#                     node_count              = 1
-#                     vm_size                 = "Standard_F2s_v2"
-#                 }
-#             }
+            # system nodepool
+            system_node_pool = {
+                node_count                  = 1
+                node_pool_name              = "systempool1"
+                vm_size                     = "Standard_D2ds_v5"
+                os_disk_size_gb             = 128
+                os_disk_type                = "Managed"
+                auto_scaling_enabled        = false
+                min_count                   = 1
+                max_count                   = 3
+                #node_taints                 = ["CriticalAddonsOnly=true:NoSchedule"]
+                node_labels = {
+                    "node.kubernetes.io/role" : "system"
+                }
+            }
 
-#             user_node_pool = {
-#                 "nodepool" = {
-#                     node_count              = 1
-#                     vm_size                 = "Standard_F2s_v2"
-#                     mode                    = "User"
-#                     os_type                 = "Linux"
-#                     os_disk_size_gb         = 30
-#                     auto_scaling_enabled    = true
-#                     min_count               = 1
-#                     max_count               = 1
-#                 }
-#             }
-#         }
-#     }
-# }
+            user_node_pool = {
+                "nodepool1" = {
+                    node_count              = 1
+                    vm_size                 = "Standard_D4ds_v5"
+                    mode                    = "User"
+                    os_type                 = "Linux"
+                    os_disk_size_gb         = 128
+                    os_disk_type            = "Managed"
+                    auto_scaling_enabled    = true
+                    min_count               = 2
+                    max_count               = 1
+                    node_taints             = [""]
+                    node_labels = {
+                        "node.kubernetes.io/role" : "app"
+                    }
+                }
+            }
+        }
+    }
+}
 
 # module "aks" {
 #     source                  = "./module/AKS"
@@ -50,9 +65,12 @@
 #     resource_group          = each.value.resource_group
 #     location                = each.value.location
 #     subnet                  = module.vnet[each.value.vnet].get_subnet_id[each.value.subnet]
+#     #subnet                  = each.value.subnet
 #     network_plugin          = each.value.network_plugin     
 #     network_plugin_mode     = each.value.network_plugin_mode
-#     network_policy          = each.value.network_policy     
+#     network_policy          = each.value.network_policy
+#     dns_prefix              = each.value.dns_prefix
+#     managed_id              = try(each.value.user_assigned_identity_ids,null)
 #     service_cidr            = each.value.service_cidr       
 #     dns_service_ip          = each.value.dns_service_ip     
 #     system_node_pool        = each.value.system_node_pool

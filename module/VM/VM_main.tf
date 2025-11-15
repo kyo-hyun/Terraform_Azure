@@ -10,7 +10,8 @@ locals {
 }
 
 # 부트진단 storage account
-data "azurerm_storage_account" "example" {
+data "azurerm_storage_account" "stg" {
+  count               = var.storage_account != null ? 1 : 0
   name                = var.storage_account
   resource_group_name = var.storage_account_rg
 }
@@ -48,8 +49,11 @@ resource "azurerm_windows_virtual_machine" "vm_windows" {
   enable_automatic_updates          = false
   patch_mode                        = "Manual"
 
-  boot_diagnostics {
-      storage_account_uri   = data.azurerm_storage_account.example.primary_blob_endpoint
+  dynamic "boot_diagnostics" {
+    for_each = var.storage_account == null ? [] : [1]
+    content {
+      storage_account_uri = data.azurerm_storage_account.stg[0].primary_blob_endpoint
+    }
   }
 
   os_disk {
@@ -87,7 +91,7 @@ resource "azurerm_virtual_machine_extension" "cse" {
 
   protected_settings = jsonencode({
     storageAccountName = var.storage_account
-    storageAccountKey  = data.azurerm_storage_account.example.primary_access_key
+    storageAccountKey  = data.azurerm_storage_account.stg[0].primary_access_key
   })
 
   lifecycle {
@@ -116,8 +120,11 @@ resource "azurerm_linux_virtual_machine" "vm_linux" {
   disable_password_authentication = false
   custom_data                     = var.script != null ? base64encode(file("${path.root}/script/${var.script}")) : null
 
-  boot_diagnostics {
-      storage_account_uri = data.azurerm_storage_account.example.primary_blob_endpoint
+  dynamic "boot_diagnostics" {
+    for_each = var.storage_account == null ? [] : [1]
+    content {
+      storage_account_uri = data.azurerm_storage_account.stg[0].primary_blob_endpoint
+    }
   }
 
   os_disk {
@@ -160,7 +167,7 @@ resource "azurerm_managed_disk" "replica_os_disk" {
 
   # vhd 복제 생성 (다른 리전 간 복제 생성)
   source_uri                        = var.source_vhd != null ? var.source_vhd : null
-  storage_account_id                = var.source_vhd != null ? data.azurerm_storage_account.example.id : null
+  storage_account_id                = var.source_vhd != null ? data.azurerm_storage_account.stg[0].id : null
 }
 
 # replica vm
@@ -182,9 +189,12 @@ resource "azurerm_virtual_machine" "replica_vm" {
     os_type                         = var.Os_Type
   }
 
-  boot_diagnostics {
-    enabled     = true
-    storage_uri = data.azurerm_storage_account.example.primary_blob_endpoint
+  dynamic "boot_diagnostics" {
+    for_each = var.storage_account == null ? [] : [1]
+    content {
+      enabled             = true
+      storage_uri = data.azurerm_storage_account.stg[0].primary_blob_endpoint
+    }
   }
 
   tags = var.tags
@@ -206,7 +216,7 @@ resource "azurerm_managed_disk" "data_disk" {
 
   # region replica
   source_uri            = try(each.value.source_vhd,null)
-  storage_account_id    = try(each.value.source_vhd,null) != null ? data.azurerm_storage_account.example.id : null
+  storage_account_id    = try(each.value.source_vhd,null) != null ? data.azurerm_storage_account.stg[0].id : null
 }
 
 # attach data disk
@@ -220,6 +230,7 @@ resource "azurerm_virtual_machine_data_disk_attachment" "example" {
 
 # attach nsg
 resource "azurerm_network_interface_security_group_association" "example" {
+  count                     = var.nsg_id != null ? 1 : 0
   network_interface_id      = azurerm_network_interface.nic.id
   network_security_group_id = var.nsg_id
 }

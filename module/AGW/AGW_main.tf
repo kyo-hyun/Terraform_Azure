@@ -3,6 +3,7 @@ resource "azurerm_application_gateway" "myagw" {
   resource_group_name = var.rg
   location            = var.location
   zones               = ["1","2","3"]
+  enable_http2        = true
 
   ssl_policy {
     policy_type          = var.ssl_policy.policy_type
@@ -40,7 +41,7 @@ resource "azurerm_application_gateway" "myagw" {
   }
 
   # public frontend
-  frontend_ip_configuration {
+  dynamic "frontend_ip_configuration" {
     for_each = var.public_ip != null ? [1] : []
     content {
       name                 = "appGwPublicFrontendIpIPv4"
@@ -106,11 +107,12 @@ resource "azurerm_application_gateway" "myagw" {
       name                = ssl_certificate.value.name
       password            = ssl_certificate.value.key_vault_secret_id == null ? ssl_certificate.value.password : null
       key_vault_secret_id = lookup(ssl_certificate.value, "key_vault_secret_id", null)
+      data                = lookup(ssl_certificate.value, "data", null)
     }
   }
 
   dynamic "http_listener" {
-    for_each = var.http_listeners
+    for_each = var.listeners
     content {
       name                           = http_listener.value.name
       frontend_ip_configuration_name = http_listener.value.frontend_ip_type == "public" ? "appGwPublicFrontendIpIPv4" : "appGwPrivateFrontendIpIPv4"
@@ -127,7 +129,7 @@ resource "azurerm_application_gateway" "myagw" {
     content {
       name                        = request_routing_rule.value.name
       rule_type                   = lookup(request_routing_rule.value, "rule_type", "Basic")
-      http_listener_name          = request_routing_rule.value.http_listener_name
+      http_listener_name          = request_routing_rule.value.listener_name
       backend_address_pool_name   = lookup(request_routing_rule.value, "backend_address_pool_name",null)
       backend_http_settings_name  = lookup(request_routing_rule.value, "backend_http_settings_name",null)
       redirect_configuration_name = lookup(request_routing_rule.value, "redirect_configuration_name",null)

@@ -38,6 +38,18 @@ variable "network_policy" {
     default = null
 }
 
+variable "dns_prefix" {
+    default = null
+}
+
+variable "user_assigned_identity_ids" {
+    default = null
+}
+
+variable "managed_id" {
+    default = null
+}
+
 variable "service_cidr" {
     default = null
 }
