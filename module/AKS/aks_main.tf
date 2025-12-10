@@ -1,16 +1,35 @@
-# locals {
-#   system_node_pool_key   = keys(var.system_node_pool)[0]
-#   system_node_pool_value = var.system_node_pool[local.system_node_pool_key]
-# }
+# aks cluster
+resource "azurerm_kubernetes_cluster" "aks" {
+  name                              = var.name
+  location                          = var.location
+  resource_group_name               = var.resource_group
+  dns_prefix                        = var.dns_prefix
+  kubernetes_version                = var.kube_version
+  private_cluster_enabled           = var.private_cluster_enabled
+  role_based_access_control_enabled = true
+  node_os_upgrade_channel           = var.automatic_channel_upgrade
+  private_dns_zone_id               = var.private_dns_zone_id
 
-resource "azurerm_kubernetes_cluster" "aks_test2" {
-  name                            = var.name
-  location                        = var.location
-  resource_group_name             = var.resource_group
-  dns_prefix                      = var.dns_prefix
-  kubernetes_version              = var.kube_version
-  private_cluster_enabled         = var.private_cluster_enabled
+  # Azure RBAC를 사용한 Microsoft Entra ID 인증
+  # azure_active_directory_role_based_access_control {
+  #     tenant_id          = var.tenant_id
+  #     azure_rbac_enabled = true
+  # }
 
+  dynamic "maintenance_window_auto_upgrade" {
+    for_each       = var.automatic_channel_upgrade == "SecurityPatch" ? [1] : [0]
+    content {
+      day_of_month = var.maintenance_auto_upgrade.day_of_month
+      day_of_week  = var.maintenance_auto_upgrade.day_of_week
+      duration     = var.maintenance_auto_upgrade.duration
+      frequency    = var.maintenance_auto_upgrade.frequency
+      interval     = var.maintenance_auto_upgrade.interval
+      start_date   = var.maintenance_auto_upgrade.start_date
+      start_time   = var.maintenance_auto_upgrade.start_time
+      utc_offset   = var.maintenance_auto_upgrade.utc_offset
+    }
+  }
+  
   default_node_pool {
     name                         = var.system_node_pool.node_pool_name
     vm_size                      = var.system_node_pool.vm_size       
@@ -22,6 +41,11 @@ resource "azurerm_kubernetes_cluster" "aks_test2" {
     max_count                    = var.system_node_pool.auto_scaling_enabled == false ? null : var.system_node_pool.max_count
     node_labels                  = lookup(var.system_node_pool,"node_labels", null)
     only_critical_addons_enabled = true
+    upgrade_settings {
+        drain_timeout_in_minutes      = null
+        node_soak_duration_in_minutes = null
+        max_surge                     = "10%"
+    }
   }
 
   identity {
@@ -55,7 +79,7 @@ resource "azurerm_kubernetes_cluster" "aks_test2" {
 resource "azurerm_kubernetes_cluster_node_pool" "userpool" {
   for_each                  = var.user_node_pool
   name                      = each.key
-  kubernetes_cluster_id     = azurerm_kubernetes_cluster.aks_test2.id
+  kubernetes_cluster_id     = azurerm_kubernetes_cluster.aks.id
   vm_size                   = each.value.vm_size
   node_count                = each.value.node_count
   orchestrator_version      = var.kube_version
@@ -66,7 +90,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "userpool" {
   auto_scaling_enabled      = each.value.auto_scaling_enabled
   min_count                 = each.value.auto_scaling_enabled == false ? null : var.system_node_pool.min_count
   max_count                 = each.value.auto_scaling_enabled == false ? null : var.system_node_pool.max_count
-  node_taints               = each.value.node_taints
+  node_taints               = lookup(each.value,"node_taints",null)
   node_labels               = each.value.node_labels
   tags = {
     Environment = "UserPool"

@@ -1,18 +1,24 @@
 locals {
     storage_account_list = {
-        "khkimstgtest123" = {
-            resource_group                      = "khkim_rg"
-            location                            = "koreacentral"
-            account_tier                        = "Standard"
-            account_replication_type            = "LRS"
+        # "khkimstgtest123" = {
+        #     resource_group                      = "khkim_rg"
+        #     location                            = "koreacentral"
+        #     account_tier                        = "Standard"
+        #     account_replication_type            = "LRS"
 
-            infrastructure_encryption_enabled   = true
-            https_traffic_only_enabled          = true
+        #     infrastructure_encryption_enabled   = true
+        #     https_traffic_only_enabled          = true
+        # }
+        
+        # "csekhkim1234567" = {
+        #     resource_group                      = "khkim_rg"
+        #     location                            = "koreacentral"
+        #     account_tier                        = "Standard"
+        #     account_replication_type            = "LRS"
 
-            # blob_delete_days                    = 7
-            # container_delete_days               = null
-            # file_share_delete_days              = 5
-        }
+        #     infrastructure_encryption_enabled   = true
+        #     https_traffic_only_enabled          = true
+        # }
     }
 }
 

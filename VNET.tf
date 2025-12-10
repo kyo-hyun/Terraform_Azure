@@ -1,25 +1,7 @@
 locals {
 
   vnet_list = {
-
-    "remote-vnet" = {
-      location       = "koreacentral"
-      resource_group = "khkim_rg"
-      address_space  = ["11.0.0.0/16"]
-
-      subnets = {
-        "test-snet" = {
-          address_prefixes = ["11.0.0.0/24"]
-        }
-      }
-
-      tags = {
-        owner = "김교현"
-      }
-
-    }
-
-    "vnet-khkim" = {
+    "Hub-vnet" = {
       location       = "koreacentral"
       resource_group = "khkim_rg"
       address_space  = ["10.0.0.0/16"]
@@ -33,49 +15,87 @@ locals {
           address_prefixes = ["10.0.1.0/24"]
         }
 
-        "lb-subnet" = {
-          address_prefixes = ["10.0.2.0/24"]
-        }
+        # "lb-subnet" = {
+        #   address_prefixes = ["10.0.2.0/24"]
+        #   nsg              = "nsg-rygus-test"
+        # }
 
         "aks-node-subnet" = {
           address_prefixes = ["10.0.3.0/24"]
+          udr              = "aks-node-udr" 
         }
 
-        "backend-subnet" = {
-          address_prefixes    = ["10.0.4.0/24"]
-          service_delegation  = "GitHub.Network/networkSettings"
-        }
+        # "backend-subnet" = {
+        #   address_prefixes    = ["10.0.4.0/24"]
+        #   service_delegation  = "GitHub.Network/networkSettings"
+        # }
 
-        "agw-subnet" = {
-          address_prefixes    = ["10.0.5.0/24"]
-          service_delegation  = "Microsoft.Network/applicationGateways"
-          nsg                 = "nsg-rygus-test"
-          #udr                 = "agw-udr"
-        }
+        # "agw-subnet" = {
+        #   address_prefixes    = ["10.0.5.0/24"]
+        #   service_delegation  = "Microsoft.Network/applicationGateways"
+        #   #udr                 = "agw-udr"
+        # }
 
-        "aks-api-subnet" = {
-          address_prefixes = ["10.0.6.0/24"]
-          #udr              = "backend-udr"
-        }
+        # "aks-api-subnet" = {
+        #   address_prefixes    = ["10.0.6.0/24"]
+        #   #udr                 = "backend-udr"
+        # }
 
         "vm-subnet" = {
-          address_prefixes = ["10.0.7.0/24"]
+          address_prefixes    = ["10.0.7.0/24"]
         }
 
         "vm2-subnet" = {
-          address_prefixes = ["10.0.8.0/24"]
+          address_prefixes    = ["10.0.8.0/24"]
         }
 
-        "apim-subnet" = {
-          address_prefixes = ["10.0.9.0/24"]
-          nsg              = "nsg-rygus-test"
-        }        
+        # "apim-subnet" = {
+        #   address_prefixes    = ["10.0.9.0/24"]
+        #   nsg                 = "nsg-rygus-test"
+        # }        
+
+        # "apim-outbound-subnet" = {
+        #   address_prefixes    = ["10.0.10.0/24"]
+        #   nsg                 = "nsg-rygus-test"
+        #   service_delegation  = "Microsoft.Web/serverFarms"
+        # }              
+
+        "unique-nic-snet" = {
+          address_prefixes    = ["10.0.11.0/24"]
+          nsg                 = "nsg-rygus-test"
+        }      
       }
 
       tags = {
         owner = "김교현"
       }
     }
+
+    "spoke1-vnet" = {
+      location       = "koreacentral"
+      resource_group = "khkim_rg"
+      address_space  = ["11.0.0.0/16"]
+
+      subnets = {
+        "vm-snet1" = {
+          address_prefixes = ["11.0.0.0/24"]
+        }
+
+        "vm-snet2" = {
+          address_prefixes = ["11.0.1.0/24"]
+          
+        }
+
+        "unique-snet" = {
+          address_prefixes = ["11.0.2.0/24"]
+        }
+      }
+
+      tags = {
+        owner = "김교현"
+      }
+
+    }    
   }
 
 }

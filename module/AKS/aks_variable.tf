@@ -14,6 +14,10 @@ variable "outbound_type" {
     default = null
 }
 
+variable "private_dns_zone_id" {
+    default = null
+}
+
 variable "resource_group" {
     default = null
 }
@@ -63,5 +67,17 @@ variable "system_node_pool" {
 }
 
 variable "user_node_pool" {
+    default = null
+}
+
+variable "automatic_channel_upgrade" {
+    default = null
+}
+
+variable "maintenance_auto_upgrade" {
+    default = null
+}
+
+variable "tenant_id" {
     default = null
 }

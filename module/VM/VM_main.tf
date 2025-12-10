@@ -9,11 +9,25 @@ locals {
     }
 }
 
-# 부트진단 storage account
-data "azurerm_storage_account" "stg" {
-  count               = var.storage_account != null ? 1 : 0
-  name                = var.storage_account
-  resource_group_name = var.storage_account_rg
+# Boot diagnostics storage account
+data "azurerm_storage_account" "boot_stg" {
+  count               = var.boot_diag_stg != null ? 1 : 0
+  name                = var.boot_diag_stg
+  resource_group_name = var.boot_diag_stg_rg
+}
+
+# Windows Custom Script Extension storage account
+data "azurerm_storage_account" "cse_stg" {
+  count               = var.cse_stg != null ? 1 : 0
+  name                = var.cse_stg
+  resource_group_name = var.cse_stg_rg
+}
+
+# Cross Region VM Replica (VHD)
+data "azurerm_storage_account" "vhd_stg" {
+  count               = var.vhd_stg != null ? 1 : 0
+  name                = var.vhd_stg
+  resource_group_name = var.vhd_stg_rg
 }
 
 # Network Interface
@@ -46,13 +60,13 @@ resource "azurerm_windows_virtual_machine" "vm_windows" {
   network_interface_ids             = [azurerm_network_interface.nic.id]
   timezone                          = "Korea Standard Time"
 
-  enable_automatic_updates          = false
-  patch_mode                        = "Manual"
+  automatic_updates_enabled         = var.automatic_updates
+  patch_mode                        = var.patch_mode       
 
   dynamic "boot_diagnostics" {
-    for_each = var.storage_account == null ? [] : [1]
+    for_each = var.boot_diag_stg == null ? [] : [1]
     content {
-      storage_account_uri = data.azurerm_storage_account.stg[0].primary_blob_endpoint
+      storage_account_uri = data.azurerm_storage_account.boot_stg[0].primary_blob_endpoint
     }
   }
 
@@ -84,14 +98,14 @@ resource "azurerm_virtual_machine_extension" "cse" {
 
   settings = <<SETTINGS
     {
-      "fileUris": ["https://${var.storage_account}.blob.core.windows.net/script/${var.script}"],
+      "fileUris": ["https://${var.cse_stg}.blob.core.windows.net/script/${var.script}"],
       "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File ${var.script}"
     }
   SETTINGS
 
   protected_settings = jsonencode({
-    storageAccountName = var.storage_account
-    storageAccountKey  = data.azurerm_storage_account.stg[0].primary_access_key
+    storageAccountName = var.cse_stg
+    storageAccountKey  = data.azurerm_storage_account.cse_stg[0].primary_access_key
   })
 
   lifecycle {
@@ -121,9 +135,9 @@ resource "azurerm_linux_virtual_machine" "vm_linux" {
   custom_data                     = var.script != null ? base64encode(file("${path.root}/script/${var.script}")) : null
 
   dynamic "boot_diagnostics" {
-    for_each = var.storage_account == null ? [] : [1]
+    for_each = var.boot_diag_stg == null ? [] : [1]
     content {
-      storage_account_uri = data.azurerm_storage_account.stg[0].primary_blob_endpoint
+      storage_account_uri = data.azurerm_storage_account.boot_stg[0].primary_blob_endpoint
     }
   }
 
@@ -167,7 +181,7 @@ resource "azurerm_managed_disk" "replica_os_disk" {
 
   # vhd 복제 생성 (다른 리전 간 복제 생성)
   source_uri                        = var.source_vhd != null ? var.source_vhd : null
-  storage_account_id                = var.source_vhd != null ? data.azurerm_storage_account.stg[0].id : null
+  storage_account_id                = var.source_vhd != null ? data.azurerm_storage_account.vhd_stg[0].id : null
 }
 
 # replica vm
@@ -190,10 +204,10 @@ resource "azurerm_virtual_machine" "replica_vm" {
   }
 
   dynamic "boot_diagnostics" {
-    for_each = var.storage_account == null ? [] : [1]
+    for_each = var.boot_diag_stg == null ? [] : [1]
     content {
       enabled             = true
-      storage_uri = data.azurerm_storage_account.stg[0].primary_blob_endpoint
+      storage_uri = data.azurerm_storage_account.boot_stg[0].primary_blob_endpoint
     }
   }
 
@@ -216,7 +230,7 @@ resource "azurerm_managed_disk" "data_disk" {
 
   # region replica
   source_uri            = try(each.value.source_vhd,null)
-  storage_account_id    = try(each.value.source_vhd,null) != null ? data.azurerm_storage_account.stg[0].id : null
+  storage_account_id    = try(each.value.source_vhd,null) != null ? data.azurerm_storage_account.vhd_stg[0].id : null
 }
 
 # attach data disk
@@ -229,8 +243,8 @@ resource "azurerm_virtual_machine_data_disk_attachment" "example" {
 }
 
 # attach nsg
-resource "azurerm_network_interface_security_group_association" "example" {
-  count                     = var.nsg_id != null ? 1 : 0
+resource "azurerm_network_interface_security_group_association" "nsg_attach" {
+  count                     = var.nsg != null ? 1 : 0
   network_interface_id      = azurerm_network_interface.nic.id
   network_security_group_id = var.nsg_id
 }

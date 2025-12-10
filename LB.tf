@@ -15,11 +15,11 @@ locals {
 
         #     backend_pool = {
         #         "test-backend-pool" = {
-        #             backend   = ["backend-2","backend-1"]
+        #             backend   = [""]
         #         }
 
         #         "test-backend-pool2" = {
-        #             backend   = ["backend-2","backend-1"]
+        #             backend   = [""]
         #         }
         #     }
 

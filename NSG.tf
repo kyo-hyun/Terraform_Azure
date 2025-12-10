@@ -27,14 +27,25 @@ locals {
           destination_address_prefix = "*"
         }
 
+        "allow-npm" = {
+          priority                   = 202
+          direction                  = "Inbound"
+          access                     = "Allow"
+          protocol                   = "Tcp"
+          source_port_range          = "*"
+          destination_port_range     = "3000"
+          source_address_prefixes    = ["218.48.21.223", "1.235.222.130","10.0.5.0/24"]
+          destination_address_prefix = "*"
+        }
+
         "allow-http" = {
           priority                   = 300
           direction                  = "Inbound"
           access                     = "Allow"
           protocol                   = "Tcp"
           source_port_range          = "*"
-          destination_port_range     = "800"
-          source_address_prefixes    = ["218.48.21.223", "1.235.222.130"]
+          destination_port_range     = "80"
+          source_address_prefixes    = ["218.48.21.223", "1.235.222.130","10.0.5.0/24"]
           destination_address_prefix = "*"
         }
 

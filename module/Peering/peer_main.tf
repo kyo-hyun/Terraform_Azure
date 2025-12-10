@@ -1,4 +1,4 @@
-resource "azurerm_virtual_network_peering" "a_to_b" {
+resource "azurerm_virtual_network_peering" "local_to_remote" {
   name                          = "peer-${var.local_vnet}-to-${var.remote_vnet}"
   resource_group_name           = var.local_vnet_rg
   virtual_network_name          = var.local_vnet
@@ -10,7 +10,7 @@ resource "azurerm_virtual_network_peering" "a_to_b" {
   use_remote_gateways           = false
 }
 
-resource "azurerm_virtual_network_peering" "spoke_to_hub" {
+resource "azurerm_virtual_network_peering" "remote_to_local" {
   name                         = "peer-${var.remote_vnet}-to-${var.local_vnet}"
   resource_group_name          = var.remote_vnet_rg
   virtual_network_name         = var.remote_vnet

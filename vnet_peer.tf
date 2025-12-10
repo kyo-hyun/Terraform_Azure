@@ -10,7 +10,7 @@ locals {
 }
 
 module "vnet_peering_intra" {
-  source          = "./module/peering"
+  source          = "./module/Peering"
   for_each        = local.vnet_peerings
 
   local_vnet_rg   = each.value.local_vnet_rg

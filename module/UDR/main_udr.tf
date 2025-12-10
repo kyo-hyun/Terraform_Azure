@@ -1,11 +1,11 @@
-# Route Table 생성
+# Route Table
 resource "azurerm_route_table" "udr" {
   name                  = var.name
   location              = var.location
   resource_group_name   = var.resource_group
 }
 
-# Route 추가
+# Route
 resource "azurerm_route" "route" {
   for_each               = var.route
   name                   = each.key

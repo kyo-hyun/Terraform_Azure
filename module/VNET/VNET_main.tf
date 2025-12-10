@@ -28,6 +28,13 @@ resource "azurerm_subnet" "subnet" {
         }
       }
     }
+
+    # action이 subnets/action 로 변하는 오류 발생하여 ignore 설정 필요
+    lifecycle {
+     ignore_changes = [
+       delegation,
+     ]
+  }
 }
 
 # NSG 할당

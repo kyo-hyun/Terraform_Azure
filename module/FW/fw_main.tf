@@ -1,7 +1,3 @@
-# locals {
-#   mgmt_subnet = replace(var.mgmt_subnet, "/resourceGroups/RG-KHKIM", "/resourceGroups/rg-khkim")
-# }
-
 # Azure Firewall
 resource "azurerm_firewall" "firewall" {
   name                      = var.name
@@ -30,7 +26,6 @@ resource "azurerm_firewall" "firewall" {
   }
 }
 
-# Azure Firewall Policy 
 resource "azurerm_firewall_policy" "policy" {
   name                = "${var.name}-policy"
   location            = var.location

@@ -46,15 +46,35 @@ variable "size" {
     default = null
 }
 
-variable "storage_account" {
+variable "boot_diag_stg" {
     default = null
 }
 
-variable "storage_account_rg" {
+variable "boot_diag_stg_rg" {
+    default = null
+}
+
+variable "cse_stg" {
+    default = null
+}
+
+variable "cse_stg_rg" {
+    default = null
+}
+
+variable "vhd_stg" {
+    default = null
+}
+
+variable "vhd_stg_rg" {
     default = null
 }
 
 variable "nsg_id" {
+    default = null
+}
+
+variable "nsg" {
     default = null
 }
 
@@ -63,6 +83,14 @@ variable "script" {
 }
 
 variable "os_disk_type" {
+    default = null
+}
+
+variable "automatic_updates" {
+    default = null
+}
+
+variable "patch_mode" {
     default = null
 }
 

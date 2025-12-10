@@ -1,4 +1,4 @@
-resource "azurerm_application_gateway" "myagw" {
+resource "azurerm_application_gateway" "appgw" {
   name                = var.name
   resource_group_name = var.rg
   location            = var.location
@@ -40,7 +40,7 @@ resource "azurerm_application_gateway" "myagw" {
     port = 80
   }
 
-  # public frontend
+  # public Frontend IP Configuration
   dynamic "frontend_ip_configuration" {
     for_each = var.public_ip != null ? [1] : []
     content {
@@ -49,17 +49,18 @@ resource "azurerm_application_gateway" "myagw" {
     }
   }
 
-  # private frontend
+  # Private Frontend IP Configuration
   dynamic "frontend_ip_configuration" {
     for_each = var.private_ip != null ? [1] : []
     content {
-      name                         = "appGwPrivateFrontendIpIPv4"
+      name                          = "appGwPrivateFrontendIpIPv4"
       private_ip_address_allocation = "Static"
       private_ip_address            = var.private_ip
-      subnet_id                    = var.subnet
+      subnet_id                     = var.subnet
     }
   }
 
+  # Backend pools
   dynamic "backend_address_pool" {
     for_each = var.backend_address_pools
     content {
@@ -69,6 +70,7 @@ resource "azurerm_application_gateway" "myagw" {
     }
   }
 
+  # Backend settings
   dynamic "backend_http_settings" {
     for_each = var.backend_http_settings
     content {
@@ -76,7 +78,7 @@ resource "azurerm_application_gateway" "myagw" {
       cookie_based_affinity  = lookup(backend_http_settings.value, "cookie_based_affinity", "Disabled")
       affinity_cookie_name   = lookup(backend_http_settings.value, "affinity_cookie_name", null)
       path                   = lookup(backend_http_settings.value, "path", "/")
-      port                   = backend_http_settings.value.enable_https ? 443 : 80
+      port                   = lookup(backend_http_settings.value, "port", "80")
       probe_name             = lookup(backend_http_settings.value, "probe_name", null)
       protocol               = backend_http_settings.value.enable_https ? "Https" : "Http"
       request_timeout        = lookup(backend_http_settings.value, "request_timeout", 30)
@@ -111,6 +113,7 @@ resource "azurerm_application_gateway" "myagw" {
     }
   }
 
+  # Listener
   dynamic "http_listener" {
     for_each = var.listeners
     content {
@@ -124,6 +127,7 @@ resource "azurerm_application_gateway" "myagw" {
     }
   }
 
+  # Rules
   dynamic "request_routing_rule" {
     for_each = var.request_routing_rules
     content {
@@ -137,6 +141,7 @@ resource "azurerm_application_gateway" "myagw" {
     }
   }
 
+  # Listener Redirect
   dynamic "redirect_configuration" {
     for_each = var.redirect_configuration
     content {
@@ -148,23 +153,25 @@ resource "azurerm_application_gateway" "myagw" {
     }
   }
 
+  # Health probes
   dynamic "probe" {
     for_each = var.health_probes
     content {
-      name                                      = probe.value.name
-      host                                      = lookup(probe.value, "host", "127.0.0.1")
-      interval                                  = lookup(probe.value, "interval", 30)
-      protocol                                  = probe.value.port == 443 ? "Https" : "Http"
-      path                                      = lookup(probe.value, "path", "/")
-      timeout                                   = lookup(probe.value, "timeout", 30)
-      unhealthy_threshold                       = lookup(probe.value, "unhealthy_threshold", 3)
-      port                                      = lookup(probe.value, "port", 443)
+      name                 = probe.value.name
+      host                 = lookup(probe.value, "host", "127.0.0.1")
+      interval             = lookup(probe.value, "interval", 30)
+      protocol             = probe.value.port == 443 ? "Https" : "Http"
+      path                 = lookup(probe.value, "path", "/")
+      timeout              = lookup(probe.value, "timeout", 30)
+      unhealthy_threshold  = lookup(probe.value, "unhealthy_threshold", 3)
+      port                 = lookup(probe.value, "port", 443)
       match {
         status_code = lookup(probe.value, "status_codes", null)
       }
     }
   }
 
+  # Managed ID
   dynamic "identity" {
     for_each = var.identity_ids != null ? [1] : []
     content {

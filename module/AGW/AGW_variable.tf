@@ -67,19 +67,16 @@ variable "waf_policy_id" {
 }
 
 variable "custom_waf_rule_name" {
-  description = "The name of the custom WAF rule."
   type        = string
   default     = null
 }
 
 variable "custom_waf_rule_priority" {
-  description = "The priority of the custom WAF rule."
   type        = number
   default     = null
 }
 
 variable "custom_waf_rule_action" {
-  description = "The action of the custom WAF rule (e.g., Allow, Block, Log)."
   type        = string
   default     = null
 }
@@ -89,7 +86,6 @@ variable "redirect_configuration" {
 }
 
 variable "custom_waf_rule_ip_addresses" {
-  description = "A list of IP addresses or CIDR ranges for the custom WAF rule."
   type        = list(string)
   default     = null
 }

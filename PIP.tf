@@ -1,14 +1,14 @@
 locals {
   pip_list = {
 
-    "PIP-LB" = {
-      rg       = "KHKIM_RG"
-      location = "koreacentral"
-      zone     = ["1","2","3"]
-      tags = {
-        owner = "김교현"
-      }
-    }
+    # "PIP-LB" = {
+    #   rg       = "KHKIM_RG"
+    #   location = "koreacentral"
+    #   zone     = ["1","2","3"]
+    #   tags = {
+    #     owner = "김교현"
+    #   }
+    # }
 
     # "PIP-fw-pip" = {
     #   rg       = "KHKIM_RG"
