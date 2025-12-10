@@ -1,277 +1,125 @@
-Terraform Azure Modules
+# 🚀 Azure Infrastructure Automation with Terraform
 
-본 리포지토리는 Azure 인프라를 Terraform 기반으로 선언적이고 일관되게 배포하기 위한 모듈(Module) 집합을 제공한다.
-VNET, VM, Application Gateway(AGW), AKS 등 다양한 Azure 리소스를 단일 코드베이스에서 효율적으로 관리할 수 있도록 구성되어 있다.
+## 📝 프로젝트 개요 (Overview)
 
-주요 특징
+본 프로젝트는 Terraform을 활용하여 Azure의 핵심 인프라 구성 요소를 코드(Infrastructure as Code, IaC)로 정의하고 배포하기 위한 모듈 및 예제 저장소입니다. 이는 **Azure 클라우드 환경의 일관된 배포와 운영 효율화**를 목표로 합니다.
 
-서비스별 독립된 Terraform 모듈 제공
+**대상 Azure 서비스 (확장 예정):**
+* **Networking:** Virtual Network (VNET), Subnet, Network Security Group (NSG)
+* **Load Balancing & Security:** Application Gateway (AGW), Web Application Firewall (WAF) Policy
+* **Compute:** Virtual Machine (VM), Azure Kubernetes Service (AKS)
+* **Database & Storage:** (향후 추가 예정)
 
-module/AGW
+## 🏗️ 모듈 구조 및 사용 방법 (Module Structure and Usage)
 
-module/VM
+본 저장소는 재사용 가능한 Terraform 모듈들을 구조화하여 관리합니다.
 
-module/VNET
+| 디렉토리/파일 | 설명 |
+| :--- | :--- |
+| `main.tf` | 인프라 구성의 메인 진입점. `locals.tf`의 설정 변수를 기반으로 모듈을 호출합니다. |
+| `locals.tf` | **배포할 리소스의 상세 설정 (예: `AGW_List`, `VNET_List`)을 HCL 형식으로 정의하는 핵심 설정 파일입니다.** |
+| `module/AGW/` | `azurerm_application_gateway` 리소스를 추상화하는 재사용 가능한 Terraform 모듈. |
+| `module/VNET/` | VNet 및 Subnet 구성을 위한 모듈. |
+| `variables.tf` | 모듈 외부에서 주입되는 변수 정의 (e.g., Global Prefix, Environment Tag 등). |
 
-module/AKS
+### 1. 배포 절차 (Deployment Steps)
 
-기타 리소스 지속 추가 예정
+Terraform을 사용하여 인프라를 배포하는 표준 절차입니다.
 
-반복 배포를 고려한 로컬 맵 기반 변수 구조
+1.  **Azure 인증 설정:** Terraform 실행 환경에서 Azure 리소스에 접근할 수 있도록 인증을 구성합니다.
+    ```bash
+    # Azure CLI를 통한 인증 및 서비스 주체 설정 권장
+    az login
+    # 구독 설정 (필요시)
+    az account set --subscription "<Your-Subscription-ID>"
+    ```
+2.  **설정 파일 업데이트:** `locals.tf` 파일을 수정하여 배포하고자 하는 리소스의 구성 정보를 정의합니다.
+3.  **Terraform 초기화:** 모듈 의존성 및 백엔드 상태를 로드합니다.
+    ```bash
+    terraform init
+    ```
+4.  **배포 계획 확인:** 생성, 변경, 삭제될 리소스 목록을 검토합니다.
+    ```bash
+    terraform plan -out=tfplan
+    ```
+5.  **배포 실행:** 인프라 구성을 Azure에 적용합니다.
+    ```bash
+    terraform apply tfplan
+    ```
 
-Dynamic Block 기반의 유연한 설정(Listener, Rule, Health Probe 등)
+### 2. AGW 설정 상세: HTTP to HTTPS 리다이렉션
 
-Public/Private Frontend, SSL Policy, Autoscale, Redirect 등 AGW의 모든 주요 기능 지원
+Application Gateway에서 HTTP (Port 80) 요청을 HTTPS (Port 443)로 강제 전환하는 설정입니다. 이 기능을 구현하려면 `redirect_configuration`과 `request_routing_rules`를 함께 사용해야 합니다.
 
-실제 운영 환경에서 확장 가능한 구조를 지향
+#### A. `locals.tf` 정의 예시
 
-Repository 구조
-Terraform_Azure/
-│
-├── module/
-│   ├── AGW/
-│   ├── VM/
-│   ├── VNET/
-│   ├── AKS/
-│   └── ...
-│
-├── examples/
-│   └── agw_basic/
-│
-└── main.tf
-
-사용 방법
-1. Provider / Backend 구성
-
-루트 디렉터리에서 다음과 같이 Provider 및 Backend를 설정한다.
-
-terraform {
-  required_version = ">= 1.5.0"
-
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "~> 4.0"
-    }
-  }
-
-  backend "azurerm" {
-    resource_group_name  = "tfstate-rg"
-    storage_account_name = "tfstg"
-    container_name       = "state"
-    key                  = "terraform.tfstate"
-  }
-}
-
-provider "azurerm" {
-  features {}
-}
-
-Application Gateway(AGW) 모듈
-
-AGW 모듈은 Azure Application Gateway의 모든 주요 기능을 지원하며, Public/Private IP, SSL, Listener, Redirect, Routing Rule, Autoscale 등을 Terraform으로 완전히 정의할 수 있다.
-
-1. locals.tf 내 정의 예시
-locals {
-  AGW_List = {
-    "agw-khkim" = {
-      rg        = "khkim_rg"
-      location  = "koreacentral"
-      vnet      = "Hub-vnet"
-      subnet    = "agw-subnet"
-
-      public_ip  = "PIP-LB"
-      private_ip = "10.0.5.173"
-
-      ssl_policy = {
-        policy_type          = "CustomV2"
-        min_protocol_version = "TLSv1_2"
-        cipher_suites = [
-          "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"
+1.  **Redirect Configuration 정의 (리다이렉션 규칙)**
+    ```terraform
+        redirect_configuration = [
+            {
+                name                 = "http_to_https_redirect"
+                redirect_type        = "Permanent" # 301 리다이렉션 권장
+                include_path         = true
+                include_query_string = true
+                # HTTP 요청을 보낼 최종 HTTPS 리스너의 이름 지정
+                target_listener_name = "listener-khkim-https" 
+            }
         ]
+    ```
+
+2.  **Request Routing Rule 정의 (HTTP 리스너에 규칙 연결)**
+    HTTP 리스너에 위에서 정의한 리다이렉션 구성을 연결하여, 모든 HTTP 요청을 HTTPS 리스너로 포워딩합니다.
+    ```terraform
+        request_routing_rules = [
+            {
+                name                        = "routingrule-http-redirect"
+                rule_type                   = "Basic"
+                listener_name               = "listener-khkim-http" # HTTP (Port 80) 리스너 이름
+                # 백엔드 풀 대신 리다이렉션 구성을 연결
+                redirect_configuration_name = "http_to_https_redirect" 
+                priority                    = 100
+            }
+            # HTTPS 트래픽을 처리하는 별도의 Basic 또는 Path-Based 라우팅 규칙 필요
+        ]
+    ```
+
+### 3. AGW 설정 상세: SSL/TLS 구성
+
+#### A. SSL 인증서 (`ssl_certificates`) 설정
+
+AGW에 TLS/SSL 인증서를 등록하여 HTTPS 트래픽을 처리할 수 있게 합니다.
+
+* **PFX 파일 사용:** 로컬 PFX 파일을 Base64로 인코딩하여 제공합니다.
+    ```terraform
+    ssl_certificates = [
+      {
+        name                = "app-cert"
+        password            = "cert_password" 
+        data                = filebase64("./ssl/server.pfx") 
       }
-
-      sku = {
-        name     = "Standard_v2"
-        tier     = "Standard_v2"
-        capacity = 1
+    ]
+    ```
+* **Key Vault Secret ID 사용:** Azure Key Vault에 저장된 인증서를 참조할 수 있습니다.
+    ```terraform
+    ssl_certificates = [
+      {
+        name                = "kv-cert"
+        key_vault_secret_id = "/subscriptions/.../secrets/cert-name/version"
       }
+    ]
+    ```
 
-      ssl_certificates = [
-        {
-          name     = "khkim-test"
-          password = "test123"
-          data     = filebase64("./ssl/server.pfx")
-        }
-      ]
+#### B. SSL 정책 (`ssl_policy`) 설정
 
-      backend_address_pools = [
-        {
-          name         = "backendpool-khkim"
-          ip_addresses = ["10.0.7.5"]
-        }
-      ]
+보안 강화를 위해 AGW가 클라이언트 연결에 적용할 TLS 정책을 명시합니다.
 
-      backend_http_settings = [
-        {
-          name         = "backendsettings-khkim"
-          port         = 3000
-          enable_https = false
-          probe_name   = "healthprobe-khkim"
-        }
-      ]
-
-      listeners = [
-        {
-          name             = "listener-khkim-http"
-          frontend_ip_type = "public"
-          port             = 80
-        }
-      ]
-
-      request_routing_rules = [
-        {
-          name                       = "rule-khkim"
-          rule_type                  = "Basic"
-          priority                   = 120
-          listener_name              = "listener-khkim-http"
-          backend_address_pool_name  = "backendpool-khkim"
-          backend_http_settings_name = "backendsettings-khkim"
-        }
-      ]
-
-      health_probes = [
-        {
-          name         = "healthprobe-khkim"
-          path         = "/sse"
-          port         = 3000
-          status_codes = ["200-399"]
-        }
+```terraform
+    ssl_policy = {
+      policy_type          = "CustomV2"
+      min_protocol_version = "TLSv1_2" # 최소 TLS 1.2 이상 권장
+      cipher_suites = [
+        "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
+        "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
+        # ... 보안 권고에 맞는 Cipher Suites 목록
       ]
     }
-  }
-}
-
-2. AGW 모듈 호출
-module "AGW" {
-  source   = "./module/AGW"
-  for_each = local.AGW_List
-
-  name                    = each.key
-  rg                      = each.value.rg
-  location                = each.value.location
-  subnet                  = module.vnet[each.value.vnet].get_subnet_id[each.value.subnet]
-
-  ssl_policy              = each.value.ssl_policy
-  ssl_certificates        = each.value.ssl_certificates
-
-  backend_address_pools   = each.value.backend_address_pools
-  backend_http_settings   = each.value.backend_http_settings
-  listeners               = each.value.listeners
-  request_routing_rules   = each.value.request_routing_rules
-  health_probes           = each.value.health_probes
-
-  public_ip               = try(module.pip[each.value.public_ip].get_pip_id, null)
-  private_ip              = each.value.private_ip
-
-  sku                     = each.value.sku
-  autoscale_configuration = try(each.value.autoscale_configuration, null)
-  identity_ids            = try(each.value.identity_ids, null)
-  waf_policy_id           = try(each.value.waf_policy_id, null)
-}
-
-Redirect 구성 방법
-
-Application Gateway는 특정 Listener로 들어온 요청을 다른 Listener로 Redirect할 수 있다.
-가장 일반적인 예시는 HTTP → HTTPS 자동 Redirect이다.
-
-HTTP → HTTPS Redirect 예시
-redirect_configuration = [
-  {
-    name                 = "redirect-http-to-https"
-    redirect_type        = "Permanent"
-    include_path         = true
-    include_query_string = true
-    target_listener_name = "listener-https"
-  }
-]
-
-listeners = [
-  {
-    name             = "listener-http"
-    port             = 80
-    frontend_ip_type = "public"
-  },
-  {
-    name                 = "listener-https"
-    port                 = 443
-    frontend_ip_type     = "public"
-    ssl_certificate_name = "khkim-cert"
-  }
-]
-
-request_routing_rules = [
-  {
-    name                        = "redirect-rule"
-    rule_type                   = "Basic"
-    listener_name               = "listener-http"
-    redirect_configuration_name = "redirect-http-to-https"
-    priority                    = 100
-  }
-]
-
-VNET, VM, AKS 등 추가 모듈 사용 예시
-
-본 리포지토리는 AGW뿐만 아니라 VM, VNET, AKS 등 다른 서비스도 모듈화하여 제공한다.
-
-VNET 예시
-module "vnet" {
-  source = "./module/VNET"
-
-  name          = "Hub-vnet"
-  rg            = "khkim_rg"
-  location      = "koreacentral"
-  address_space = ["10.0.0.0/16"]
-
-  subnets = {
-    agw-subnet = "10.0.5.0/24"
-    vm-subnet  = "10.0.7.0/24"
-  }
-}
-
-VM 예시
-module "vm" {
-  source = "./module/VM"
-
-  name      = "khkim-ubuntu"
-  rg        = "khkim_rg"
-  subnet_id = module.vnet["Hub-vnet"].get_subnet_id["vm-subnet"]
-  size      = "Standard_B2ms"
-}
-
-AKS 예시
-module "aks" {
-  source = "./module/AKS"
-
-  name              = "skax-adxp-aks"
-  rg                = "khkim_rg"
-  location          = "koreacentral"
-  default_node_pool = { name = "system", vm_size = "Standard_D4ds_v5" }
-}
-
-배포 절차
-terraform init
-terraform plan
-terraform apply
-
-주의사항
-
-AGW Subnet은 /27 이상의 크기가 필요하다.
-
-SSL 인증서는 Key Vault 또는 local pfx(Base64) 방식 중 선택 가능하다.
-
-Public / Private Frontend를 동시에 사용할 경우 필수 값이 모두 정의되어 있어야 한다.
-
-다른 모듈과 연동 시 subnet/VNET 참조를 일관되게 유지해야 한다.
-
-속성 누락·오타는 AGW Validation 단계에서 오류로 나타날 수 있으므로 주의한다.
