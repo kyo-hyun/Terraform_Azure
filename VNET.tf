@@ -22,7 +22,7 @@ locals {
 
         "aks-node-subnet" = {
           address_prefixes = ["10.0.3.0/24"]
-          udr              = "aks-node-udr" 
+          #udr              = "aks-node-udr" 
         }
 
         # "backend-subnet" = {

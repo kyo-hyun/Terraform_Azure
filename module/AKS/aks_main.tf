@@ -9,6 +9,8 @@ resource "azurerm_kubernetes_cluster" "aks" {
   role_based_access_control_enabled = true
   node_os_upgrade_channel           = var.automatic_channel_upgrade
   private_dns_zone_id               = var.private_dns_zone_id
+  oidc_issuer_enabled               = true
+  workload_identity_enabled         = true
 
   # Azure RBAC를 사용한 Microsoft Entra ID 인증
   # azure_active_directory_role_based_access_control {
@@ -87,9 +89,9 @@ resource "azurerm_kubernetes_cluster_node_pool" "userpool" {
   mode                      = each.value.mode
   os_type                   = each.value.os_type
   os_disk_size_gb           = each.value.os_disk_size_gb
-  auto_scaling_enabled      = each.value.auto_scaling_enabled
-  min_count                 = each.value.auto_scaling_enabled == false ? null : var.system_node_pool.min_count
-  max_count                 = each.value.auto_scaling_enabled == false ? null : var.system_node_pool.max_count
+  auto_scaling_enabled      = lookup(each.value,"auto_scaling_enabled",false)
+  min_count                 = try(each.value.auto_scaling_enabled,false) == false ? null : var.system_node_pool.min_count
+  max_count                 = try(each.value.auto_scaling_enabled,false) == false ? null : var.system_node_pool.max_count
   node_taints               = lookup(each.value,"node_taints",null)
   node_labels               = each.value.node_labels
   tags = {

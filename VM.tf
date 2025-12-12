@@ -18,36 +18,36 @@ locals {
 
   vm_list = {
 
-    "khkim-windows" = {
-      rg                  = "khkim_rg"
-      location            = "koreacentral"
-      vnet                = "spoke1-vnet"
-      subnet              = "vm-snet1"
-      ip_address          = "11.0.0.4"
-      public_ip           = "PIP-worker1"
-      nsg                 = "nsg-rygus-test"
+    # "khkim-windows" = {
+    #   rg                  = "khkim_rg"
+    #   location            = "koreacentral"
+    #   vnet                = "spoke1-vnet"
+    #   subnet              = "vm-snet1"
+    #   ip_address          = "11.0.0.4"
+    #   public_ip           = "PIP-worker1"
+    #   nsg                 = "nsg-rygus-test"
 
-      size                = "Standard_F4s_v2"
-      os_disk_type        = "Standard_LRS"
-      OsType              = "Windows"
-      OsImage             = "2022-datacenter"
-      os_disk_size        = 128
+    #   size                = "Standard_F4s_v2"
+    #   os_disk_type        = "Standard_LRS"
+    #   OsType              = "Windows"
+    #   OsImage             = "2022-datacenter"
+    #   os_disk_size        = 128
 
-      automatic_updates   = true
-      patch_mode          = "AutomaticByPlatform"
+    #   automatic_updates   = true
+    #   patch_mode          = "AutomaticByPlatform"
 
-      # boot_diag_rg        = "khkim_rg"
-      # boot_diag_stg       = "khkimstgtest123"
+    #   # boot_diag_rg        = "khkim_rg"
+    #   # boot_diag_stg       = "khkimstgtest123"
 
-      # script              = "set_apache.sh"
+    #   # script              = "set_apache.sh"
 
-      data_disk           = {
+    #   data_disk           = {
 
-      }
-      tags = {
-        owner = "김교현"
-      }
-    }
+    #   }
+    #   tags = {
+    #     owner = "김교현"
+    #   }
+    # }
 
     # "khkim-ubuntu2" = {
     #   rg                  = "khkim_rg"
