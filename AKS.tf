@@ -48,21 +48,21 @@ locals {
             }
 
             user_node_pool = {
-                "nodepool1" = {
-                    node_count              = 3
-                    vm_size                 = "Standard_D4ds_v5"
-                    mode                    = "User"
-                    os_type                 = "Linux"
-                    os_disk_size_gb         = 128
-                    os_disk_type            = "Managed"
-                    #auto_scaling_enabled    = true
-                    #min_count               = 2
-                    #max_count               = 1
-                    #node_taints             = [""]
-                    node_labels = {
-                        "node.kubernetes.io/role" : "app"
-                    }
-                }
+                # "nodepool1" = {
+                #     node_count              = 1
+                #     vm_size                 = "Standard_D4ds_v5"
+                #     mode                    = "User"
+                #     os_type                 = "Linux"
+                #     os_disk_size_gb         = 128
+                #     os_disk_type            = "Managed"
+                #     #auto_scaling_enabled    = true
+                #     #min_count               = 2
+                #     #max_count               = 1
+                #     #node_taints             = [""]
+                #     node_labels = {
+                #         "node.kubernetes.io/role" : "app"
+                #     }
+                # }
             }
         }
     }

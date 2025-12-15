@@ -77,9 +77,9 @@ locals {
     # "khkim-ubuntu1" = {
     #   rg                  = "khkim_rg"
     #   location            = "koreacentral"
-    #   vnet                = "spoke1-vnet"
-    #   subnet              = "vm-snet1"
-    #   ip_address          = "11.0.0.4"
+    #   vnet                = "Hub-vnet"
+    #   subnet              = "vm-subnet"
+    #   ip_address          = "10.0.7.4"
     #   public_ip           = "PIP-worker1"
     #   nsg                 = "nsg-rygus-test"
 
