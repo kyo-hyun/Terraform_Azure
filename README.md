@@ -66,14 +66,13 @@
 
 ## 시작하기
 
-### 사전 준비사항
+### 계정 인증 정보 관리
 
-1.  [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) 설치
-2.  [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) 설치
-3.  Azure CLI를 통해 Azure 계정에 로그인합니다.
-    ```bash
-    az login
-    ```
+이 Terraform 구성은 **Service Principal(SPN)** 정보를  
+외부 YAML 파일로 분리하여 관리하는 방식을 사용합니다.
+
+- 인증 정보는 GitHub에 커밋되지 않습니다.
+- `yamldecode()` + `file()` 을 이용해 로컬에서만 로드합니다.
 
 ### 배포 절차
 
