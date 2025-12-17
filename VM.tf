@@ -74,30 +74,30 @@ locals {
     #   }
     # }
 
-    # "khkim-ubuntu1" = {
-    #   rg                  = "khkim_rg"
-    #   location            = "koreacentral"
-    #   vnet                = "Hub-vnet"
-    #   subnet              = "vm-subnet"
-    #   ip_address          = "10.0.7.4"
-    #   public_ip           = "PIP-worker1"
-    #   nsg                 = "nsg-rygus-test"
+    "khkim-ubuntu1" = {
+      rg                  = "khkim_rg"
+      location            = "koreacentral"
+      vnet                = "Hub-vnet"
+      subnet              = "vm-subnet"
+      ip_address          = "10.0.7.4"
+      public_ip           = "PIP-worker1"
+      nsg                 = "nsg-rygus-test"
 
-    #   size                = "Standard_F4s_v2"
-    #   os_disk_type        = "Standard_LRS"
-    #   OsType              = "ubuntu"
-    #   OsImage             = "22_04-lts"
-    #   os_disk_size        = 32
+      size                = "Standard_F4s_v2"
+      os_disk_type        = "Standard_LRS"
+      OsType              = "ubuntu"
+      OsImage             = "22_04-lts"
+      os_disk_size        = 32
 
-    #   #script              = "set_apache.sh"
+      #script              = "set_apache.sh"
 
-    #   data_disk           = {
+      data_disk           = {
 
-    #   }
-    #   tags = {
-    #     owner = "김교현"
-    #   }
-    # }
+      }
+      tags = {
+        owner = "김교현"
+      }
+    }
 
     # "khkim-ubuntu-2" = {
     #   rg                  = "khkim_rg"

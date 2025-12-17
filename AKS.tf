@@ -8,7 +8,7 @@ locals {
             vnet                            = "Hub-vnet"
             subnet                          = "aks-node-subnet"
             outbound_type                   = "loadBalancer"
-            private_cluster_enabled         = false
+            private_cluster_enabled         = true
             #private_dns_zone_id             = ""
             managed_id                      = ""
 

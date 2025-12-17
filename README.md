@@ -2,7 +2,7 @@
 
 이 프로젝트는 **Terraform을 사용하여 Azure 클라우드 환경에 Hub-Spoke 네트워크 아키텍처를 기반으로 다양한 서비스를 배포하고 관리**하기 위한 포트폴리오입니다.
 
-코드형 인프라(IaC, Infrastructure as Code)의 모범 사례를 따라, Terraform의 모듈(Module) 구조를 적극적으로 활용하여 코드의 **재사용성, 가독성, 유지보수성**을 높이는 데 중점을 두었습니다.
+코드형 인프라(IaC, Infrastructure as Code)의 모범 사례를 따라, Terraform의 모듈(Module) 구조를 활용하여 코드의 **재사용성, 가독성, 유지보수성**을 높이는 데 중점을 두었습니다.
 
 ## 주요 특징
 
