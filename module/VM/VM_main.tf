@@ -157,7 +157,7 @@ resource "azurerm_linux_virtual_machine" "vm_linux" {
 
   lifecycle {
     ignore_changes = [
-      custom_data
+      custom_data, identity
     ]
   }
 

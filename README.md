@@ -18,7 +18,8 @@
 *   **Hub VNet**:
     *   Azure Firewall, Application Gateway 등과 같은 공유 서비스를 배치하는 중앙 네트워크입니다.
     *   외부 및 Spoke 간의 모든 트래픽은 이곳을 통과하며, UDR(사용자 정의 경로)을 통해 트래픽 흐름을 제어합니다.
-    *   Application Gateway의 모든 트래픽은 Azure Firewall를 통과하게됩니다. 
+    *   Application Gateway의 모든 트래픽은 N-IDS를 통과 후 WAF에 도달하게 됩니다. 
+    *   WAF에서 
 *   **Spoke VNet**:
     *   애플리케이션(VM, AKS 등)이 실제로 배포되는 개별 네트워크입니다.
     *   각 Spoke는 Hub VNet과 피어링(Peering)으로 연결되어 통신합니다.

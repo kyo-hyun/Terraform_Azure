@@ -10,15 +10,19 @@ variable "kube_version" {
     default = null
 }
 
-variable "outbound_type" {
-    default = null
-}
-
 variable "private_dns_zone_id" {
     default = null
 }
 
+variable "outbound_type" {
+    default = null
+}
+
 variable "resource_group" {
+    default = null
+}
+
+variable "rbac" {
     default = null
 }
 

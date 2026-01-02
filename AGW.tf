@@ -1,6 +1,6 @@
 locals {
     AGW_List = {
-        # "agw-khkim" = {
+        # "agw" = {
         #     rg                      = "khkim_rg"
         #     location                = "koreacentral"
         #     #identity_ids            = [""]
@@ -32,18 +32,18 @@ locals {
         #     # }
 
         #     ssl_certificates = [
-        #       {
-        #         name                = "khkim-test"
-        #         key_vault_secret_id = null
-        #         password            = "test123"
-        #         data                = filebase64("./ssl/server.pfx")
-        #       }
+        #     #   {
+        #     #     name                = "khkim-test"
+        #     #     key_vault_secret_id = null
+        #     #     password            = "test123"
+        #     #     data                = filebase64("./ssl/server.pfx")
+        #     #   }
         #     ]
 
         #     backend_address_pools = [
         #         {
         #           name         = "backendpool-khkim"
-        #           ip_addresses = ["10.0.7.5"]
+        #           ip_addresses = ["10.0.7.4"]
         #         }
         #     ]
 
@@ -51,8 +51,8 @@ locals {
         #       {
         #         name                  = "backendsettings-khkim"
         #         cookie_based_affinity = "Disabled"
-        #         path                  = "/sse"
-        #         port                  = 3000
+        #         path                  = "/"
+        #         port                  = 80
         #         enable_https          = false
         #         request_timeout       = 20
         #         probe_name            = "healthprobe-khkim"

@@ -1,10 +1,23 @@
 locals {
   rg_list = {
-    "khkim_rg" = {
+    "Hub_rg" = {
       location = "koreacentral"
       tags     = {
-        사용자 = "김교현"
-        용도   = "테스트"
+        Env = "Hub"
+      }
+    }
+
+    "Spoke1_rg" = {
+      location = "koreacentral"
+      tags     = {
+        Env = "Spoke1"
+      }
+    }
+
+    "Spoke2_rg" = {
+      location = "koreacentral"
+      tags     = {
+        Env = "Spoke2"
       }
     }
   }

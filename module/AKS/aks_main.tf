@@ -1,3 +1,9 @@
+resource "azurerm_user_assigned_identity" "aks" {
+  name                = "uami-aks-dns"
+  resource_group_name = var.resource_group
+  location            = var.location
+}
+
 # aks cluster
 resource "azurerm_kubernetes_cluster" "aks" {
   name                              = var.name
@@ -10,25 +16,29 @@ resource "azurerm_kubernetes_cluster" "aks" {
   node_os_upgrade_channel           = var.automatic_channel_upgrade
   private_dns_zone_id               = var.private_dns_zone_id
   oidc_issuer_enabled               = true
-  workload_identity_enabled         = true
+  workload_identity_enabled         = var.rbac == "azrbac" ? true : false
 
   # Azure RBAC를 사용한 Microsoft Entra ID 인증
-  # azure_active_directory_role_based_access_control {
-  #     tenant_id          = var.tenant_id
-  #     azure_rbac_enabled = true
-  # }
+  dynamic "azure_active_directory_role_based_access_control" {
+    for_each = var.rbac == "azrbac" ? [1] : []
+    content {
+      tenant_id          = var.tenant_id
+      azure_rbac_enabled = true
+    }
+  }
 
   dynamic "maintenance_window_auto_upgrade" {
-    for_each       = var.automatic_channel_upgrade == "SecurityPatch" ? [1] : [0]
+    for_each = var.automatic_channel_upgrade == "SecurityPatch" ? [1] : []
+
     content {
-      day_of_month = var.maintenance_auto_upgrade.day_of_month
-      day_of_week  = var.maintenance_auto_upgrade.day_of_week
-      duration     = var.maintenance_auto_upgrade.duration
-      frequency    = var.maintenance_auto_upgrade.frequency
-      interval     = var.maintenance_auto_upgrade.interval
-      start_date   = var.maintenance_auto_upgrade.start_date
-      start_time   = var.maintenance_auto_upgrade.start_time
-      utc_offset   = var.maintenance_auto_upgrade.utc_offset
+      day_of_month = maintenance_window_auto_upgrade.value.day_of_month
+      day_of_week  = maintenance_window_auto_upgrade.value.day_of_week
+      duration     = maintenance_window_auto_upgrade.value.duration
+      frequency    = maintenance_window_auto_upgrade.value.frequency
+      interval     = maintenance_window_auto_upgrade.value.interval
+      start_date   = maintenance_window_auto_upgrade.value.start_date
+      start_time   = maintenance_window_auto_upgrade.value.start_time
+      utc_offset   = maintenance_window_auto_upgrade.value.utc_offset
     }
   }
   
@@ -43,16 +53,22 @@ resource "azurerm_kubernetes_cluster" "aks" {
     max_count                    = var.system_node_pool.auto_scaling_enabled == false ? null : var.system_node_pool.max_count
     node_labels                  = lookup(var.system_node_pool,"node_labels", null)
     only_critical_addons_enabled = true
+
     upgrade_settings {
-        drain_timeout_in_minutes      = null
-        node_soak_duration_in_minutes = null
-        max_surge                     = "10%"
+      max_surge = "10%"
+      drain_timeout_in_minutes = 0
+      node_soak_duration_in_minutes = 0
     }
   }
 
+  # identity {
+  #   type                  = var.managed_id != null ? "UserAssigned" : "SystemAssigned"
+  #   identity_ids          = var.managed_id != null ? var.managed_id : null
+  # }
+
   identity {
-    type                  = var.managed_id != null ? "UserAssigned" : "SystemAssigned"
-    identity_ids          = var.managed_id != null ? var.managed_id : null
+    type                  = "UserAssigned"
+    identity_ids          = [azurerm_user_assigned_identity.aks.id]
   }
 
   network_profile {
@@ -94,6 +110,12 @@ resource "azurerm_kubernetes_cluster_node_pool" "userpool" {
   max_count                 = try(each.value.auto_scaling_enabled,false) == false ? null : var.system_node_pool.max_count
   node_taints               = lookup(each.value,"node_taints",null)
   node_labels               = each.value.node_labels
+
+  upgrade_settings {
+      max_surge = "10%"
+      drain_timeout_in_minutes = 0
+      node_soak_duration_in_minutes = 0
+  }
   tags = {
     Environment = "UserPool"
   }

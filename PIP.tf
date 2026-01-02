@@ -2,7 +2,7 @@ locals {
   pip_list = {
 
     # "PIP-LB" = {
-    #   rg       = "KHKIM_RG"
+    #   rg       = "hub_rg"
     #   location = "koreacentral"
     #   zone     = ["1","2","3"]
     #   tags = {
@@ -11,7 +11,7 @@ locals {
     # }
 
     # "PIP-fw-pip" = {
-    #   rg       = "KHKIM_RG"
+    #   rg       = "hub_rg"
     #   location = "koreacentral"
     #   tags = {
     #     owner = "김교현"
@@ -19,7 +19,7 @@ locals {
     # }
 
     # "PIP-fw-mgmt-pip" = {
-    #   rg       = "KHKIM_RG"
+    #   rg       = "hub_rg"
     #   location = "koreacentral"
     #   tags = {
     #     owner = "김교현"
@@ -27,28 +27,28 @@ locals {
     # }
 
     # "PIP-Master" = {
-    #   rg       = "KHKIM_RG"
+    #   rg       = "hub_rg"
     #   location = "koreacentral"
     #   tags = {
     #     owner = "김교현"
     #   }
     # }
 
-    "PIP-worker1" = {
-      rg       = "KHKIM_RG"
-      location = "koreacentral"
-      tags = {
-        owner = "김교현"
-      }
-    }
+    # "PIP-worker1" = {
+    #   rg       = "hub_rg"
+    #   location = "koreacentral"
+    #   tags = {
+    #     owner = "김교현"
+    #   }
+    # }
 
-    "PIP-worker2" = {
-      rg       = "KHKIM_RG"
-      location = "koreacentral"
-      tags = {
-        owner = "김교현"
-      }
-    }
+    # "PIP-worker2" = {
+    #   rg       = "hub_rg"
+    #   location = "koreacentral"
+    #   tags = {
+    #     owner = "김교현"
+    #   }
+    # }
 
   }
 }

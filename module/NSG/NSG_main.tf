@@ -14,8 +14,10 @@ resource "azurerm_network_security_rule" "nsg_rule" {
   access                      = each.value.access
   protocol                    = each.value.protocol
   source_port_range           = each.value.source_port_range
-  destination_port_range      = each.value.destination_port_range
-  source_address_prefixes     = each.value.source_address_prefixes
+  destination_port_range      = each.value.destination_port_range[0] == "*" ? each.value.destination_port_range[0] : null
+  destination_port_ranges     = each.value.destination_port_range[0] != "*" ? each.value.destination_port_range : null
+  source_address_prefix       = each.value.source_address_prefixes[0] == "*" ? each.value.source_address_prefixes[0] : null
+  source_address_prefixes     = each.value.source_address_prefixes[0] != "*" ? each.value.source_address_prefixes : null
   destination_address_prefix  = each.value.destination_address_prefix
   resource_group_name         = var.resource_group
   network_security_group_name = azurerm_network_security_group.nsg.name

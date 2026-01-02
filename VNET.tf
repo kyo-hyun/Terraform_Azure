@@ -1,103 +1,105 @@
 locals {
-
   vnet_list = {
-    "Hub-vnet" = {
+    "hub-vnet" = {
       location       = "koreacentral"
-      resource_group = "khkim_rg"
-      address_space  = ["10.0.0.0/16"]
+      resource_group = "Hub_rg"
+      address_space  = ["10.0.0.0/25"]
 
       subnets = {
-        "AzureFirewallSubnet" = {
-          address_prefixes = ["10.0.0.0/24"]
+        "agw-snet" = {
+          address_prefixes    = ["10.0.0.0/27"]
+          service_delegation  = "Microsoft.Network/applicationGateways"
+          udr                 = "agw-udr"
+          nsg                 = "agw-snet-nsg"
         }
 
-        "AzureFirewallManagementSubnet" = {
-          address_prefixes = ["10.0.1.0/24"]
+        "n-ids-untrust-snet" = {
+          address_prefixes    = ["10.0.0.32/28"]
+          nsg                 = "n-ids-untrust-snet-nsg"
         }
 
-        # "lb-subnet" = {
-        #   address_prefixes = ["10.0.2.0/24"]
-        #   nsg              = "nsg-rygus-test"
-        # }
-
-        "aks-node-subnet" = {
-          address_prefixes = ["10.0.3.0/24"]
-          #udr              = "aks-node-udr" 
+        "n-ids-trust-snet" = {
+          address_prefixes    = ["10.0.0.48/28"]
+          nsg                 = "n-ids-trust-snet-nsg"
         }
 
-        # "backend-subnet" = {
-        #   address_prefixes    = ["10.0.4.0/24"]
-        #   service_delegation  = "GitHub.Network/networkSettings"
-        # }
-
-        # "agw-subnet" = {
-        #   address_prefixes    = ["10.0.5.0/24"]
-        #   service_delegation  = "Microsoft.Network/applicationGateways"
-        #   #udr                 = "agw-udr"
-        # }
-
-        # "aks-api-subnet" = {
-        #   address_prefixes    = ["10.0.6.0/24"]
-        #   #udr                 = "backend-udr"
-        # }
-
-        "vm-subnet" = {
-          address_prefixes    = ["10.0.7.0/24"]
+        "waf-snet" = {
+          address_prefixes    = ["10.0.0.64/28"]
+          nsg                 = "waf-snet-nsg"
         }
 
-        "vm2-subnet" = {
-          address_prefixes    = ["10.0.8.0/24"]
-        }
-
-        # "apim-subnet" = {
-        #   address_prefixes    = ["10.0.9.0/24"]
-        #   nsg                 = "nsg-rygus-test"
-        # }        
-
-        # "apim-outbound-subnet" = {
-        #   address_prefixes    = ["10.0.10.0/24"]
-        #   nsg                 = "nsg-rygus-test"
-        #   service_delegation  = "Microsoft.Web/serverFarms"
-        # }              
-
-        "unique-nic-snet" = {
-          address_prefixes    = ["10.0.11.0/24"]
-          nsg                 = "nsg-rygus-test"
-        }      
+        "mgmt-snet" = {
+          address_prefixes    = ["10.0.0.80/28"]
+          nsg                 = "mgmt-snet-nsg"
+        }        
       }
 
       tags = {
-        owner = "김교현"
+        env   = "Hub"
       }
     }
 
     "spoke1-vnet" = {
       location       = "koreacentral"
-      resource_group = "khkim_rg"
-      address_space  = ["11.0.0.0/16"]
+      resource_group = "Spoke1_rg"
+      address_space  = ["10.0.0.128/25"]
 
       subnets = {
-        "vm-snet1" = {
-          address_prefixes = ["11.0.0.0/24"]
+        "aks-lb-sent" = {
+          address_prefixes = ["10.0.0.160/28"]
+          udr              = "spoke1-aks-lb-udr"
+          nsg              = "spoke1-aks-lb-sent-nsg"
         }
 
-        "vm-snet2" = {
-          address_prefixes = ["11.0.1.0/24"]
+        "aks-sent" = {
+          address_prefixes = ["10.0.0.128/27"]
+          udr              = "spoke1-aks-udr"
+          nsg              = "spoke1-aks-sent-nsg"
           
         }
 
-        "unique-snet" = {
-          address_prefixes = ["11.0.2.0/24"]
+        "pep-snet" = {
+          address_prefixes = ["10.0.0.176/28"]
+          nsg              = "spoke1-pep-sent-nsg"
         }
       }
 
       tags = {
-        owner = "김교현"
+        env = "Spoke1"
+      }
+
+    }
+
+    "spoke2-vnet" = {
+      location       = "koreacentral"
+      resource_group = "Spoke2_rg"
+      address_space  = ["11.0.0.0/25"]
+
+      subnets = {
+        "aks-lb-sent" = {
+          address_prefixes = ["11.0.0.32/28"]
+          udr              = "spoke2-aks-lb-udr"
+          nsg              = "spoke2-aks-lb-sent-nsg"
+        }
+
+        "aks-sent" = {
+          address_prefixes = ["11.0.0.0/27"]
+          udr              = "spoke2-aks-udr"
+          nsg              = "spoke2-aks-sent-nsg"
+        }
+
+        "pep-snet" = {
+          address_prefixes = ["11.0.0.48/28"]
+          nsg              = "spoke2-pep-sent-nsg"
+        }
+      }
+
+      tags = {
+        env = "Spoke2"
       }
 
     }    
   }
-
 }
 
 module "vnet" {
