@@ -7,6 +7,10 @@ locals {
     } : {
     id = azurerm_virtual_machine.replica_vm[0].id
     }
+  nic_list = compact([
+    azurerm_network_interface.primary_nic.id, 
+    var.secondary_nic != null ? azurerm_network_interface.secondary_nic[0].id : ""
+  ])
 }
 
 # Boot diagnostics storage account
@@ -30,8 +34,8 @@ data "azurerm_storage_account" "vhd_stg" {
   resource_group_name = var.vhd_stg_rg
 }
 
-# Network Interface
-resource "azurerm_network_interface" "nic" {
+# Primary Network Interface
+resource "azurerm_network_interface" "primary_nic" {
   name                            = "NIC-${var.name}"
   location                        = var.location
   resource_group_name             = var.rg
@@ -47,6 +51,23 @@ resource "azurerm_network_interface" "nic" {
   }
 }
 
+# Secondary Network Interface
+resource "azurerm_network_interface" "secondary_nic" {
+  count                           = var.secondary_nic != null ? 1 : 0
+  name                            = "NIC-secondary-${var.name}"
+  location                        = var.location
+  resource_group_name             = var.rg
+  accelerated_networking_enabled  = true
+  ip_forwarding_enabled           = true
+
+  ip_configuration {
+    name                          = "Ipconfiguration-secondary-${var.name}"
+    subnet_id                     = var.secondary_nic.subnet
+    private_ip_address_allocation = "Static"
+    private_ip_address            = var.secondary_nic.ip_address
+  }
+}
+
 # Winodws VM
 resource "azurerm_windows_virtual_machine" "vm_windows" {
   count                             = var.Os_Type == "Windows" && var.VM_Type == "new" ? 1:0
@@ -57,7 +78,7 @@ resource "azurerm_windows_virtual_machine" "vm_windows" {
   size                              = var.size
   admin_username                    = var.os_profile.id
   admin_password                    = var.os_profile.pw
-  network_interface_ids             = [azurerm_network_interface.nic.id]
+  network_interface_ids             = local.nic_list
   timezone                          = "Korea Standard Time"
 
   automatic_updates_enabled         = var.automatic_updates
@@ -130,7 +151,7 @@ resource "azurerm_linux_virtual_machine" "vm_linux" {
   size                            = var.size
   admin_username                  = var.os_profile.id
   admin_password                  = var.os_profile.pw
-  network_interface_ids           = [azurerm_network_interface.nic.id]
+  network_interface_ids           = local.nic_list
   disable_password_authentication = false
   custom_data                     = var.script != null ? base64encode(file("${path.root}/script/${var.script}")) : null
 
@@ -190,7 +211,7 @@ resource "azurerm_virtual_machine" "replica_vm" {
   name                              = "${var.name}"
   location                          = var.location
   resource_group_name               = var.rg
-  network_interface_ids             = [azurerm_network_interface.nic.id]
+  network_interface_ids             = local.nic_list
   vm_size                           = var.size
   delete_os_disk_on_termination     = false
   delete_data_disks_on_termination  = false
@@ -245,6 +266,6 @@ resource "azurerm_virtual_machine_data_disk_attachment" "example" {
 # attach nsg
 resource "azurerm_network_interface_security_group_association" "nsg_attach" {
   count                     = var.nsg != null ? 1 : 0
-  network_interface_id      = azurerm_network_interface.nic.id
+  network_interface_id      = azurerm_network_interface.primary_nic.id
   network_security_group_id = var.nsg_id
 }

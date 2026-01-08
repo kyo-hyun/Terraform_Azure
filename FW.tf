@@ -1,9 +1,9 @@
 locals {
     fw_list = {
-        # "FW-khkim-standard" = {
-        #     resource_group = "khkim_rg"
+        # "FW-Hub-standard" = {
+        #     resource_group = "Hub_rg"
         #     location       = "koreacentral"
-        #     vnet           = "Hub-vnet"
+        #     vnet           = "hub-vnet"
         #     public_ip      = "PIP-fw-pip"
         #     subnet         = "AzureFirewallSubnet"
         #     sku            = "Standard"

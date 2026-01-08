@@ -45,22 +45,22 @@ locals {
       address_space  = ["10.0.0.128/25"]
 
       subnets = {
-        "aks-lb-sent" = {
+        "aks-lb-snet" = {
           address_prefixes = ["10.0.0.160/28"]
           udr              = "spoke1-aks-lb-udr"
-          nsg              = "spoke1-aks-lb-sent-nsg"
+          nsg              = "spoke1-aks-lb-snet-nsg"
         }
 
-        "aks-sent" = {
+        "aks-snet" = {
           address_prefixes = ["10.0.0.128/27"]
           udr              = "spoke1-aks-udr"
-          nsg              = "spoke1-aks-sent-nsg"
+          nsg              = "spoke1-aks-snet-nsg"
           
         }
 
         "pep-snet" = {
           address_prefixes = ["10.0.0.176/28"]
-          nsg              = "spoke1-pep-sent-nsg"
+          nsg              = "spoke1-pep-snet-nsg"
         }
       }
 
@@ -76,21 +76,21 @@ locals {
       address_space  = ["11.0.0.0/25"]
 
       subnets = {
-        "aks-lb-sent" = {
+        "aks-lb-snet" = {
           address_prefixes = ["11.0.0.32/28"]
           udr              = "spoke2-aks-lb-udr"
-          nsg              = "spoke2-aks-lb-sent-nsg"
+          nsg              = "spoke2-aks-lb-snet-nsg"
         }
 
-        "aks-sent" = {
+        "aks-snet" = {
           address_prefixes = ["11.0.0.0/27"]
           udr              = "spoke2-aks-udr"
-          nsg              = "spoke2-aks-sent-nsg"
+          nsg              = "spoke2-aks-snet-nsg"
         }
 
         "pep-snet" = {
           address_prefixes = ["11.0.0.48/28"]
-          nsg              = "spoke2-pep-sent-nsg"
+          nsg              = "spoke2-pep-snet-nsg"
         }
       }
 

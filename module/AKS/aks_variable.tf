@@ -85,3 +85,7 @@ variable "maintenance_auto_upgrade" {
 variable "tenant_id" {
     default = null
 }
+
+variable "user_assigned_identity_id" {
+    default = null
+}

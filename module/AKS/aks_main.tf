@@ -1,9 +1,3 @@
-resource "azurerm_user_assigned_identity" "aks" {
-  name                = "uami-aks-dns"
-  resource_group_name = var.resource_group
-  location            = var.location
-}
-
 # aks cluster
 resource "azurerm_kubernetes_cluster" "aks" {
   name                              = var.name
@@ -61,14 +55,9 @@ resource "azurerm_kubernetes_cluster" "aks" {
     }
   }
 
-  # identity {
-  #   type                  = var.managed_id != null ? "UserAssigned" : "SystemAssigned"
-  #   identity_ids          = var.managed_id != null ? var.managed_id : null
-  # }
-
   identity {
-    type                  = "UserAssigned"
-    identity_ids          = [azurerm_user_assigned_identity.aks.id]
+    type                  = var.user_assigned_identity_id != null ? "UserAssigned" : "SystemAssigned" 
+    identity_ids          = var.user_assigned_identity_id != null ? [var.user_assigned_identity_id] : null
   }
 
   network_profile {
@@ -99,7 +88,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "userpool" {
   name                      = each.key
   kubernetes_cluster_id     = azurerm_kubernetes_cluster.aks.id
   vm_size                   = each.value.vm_size
-  node_count                = each.value.node_count
+  node_count                = try(each.value.node_count,null)
   orchestrator_version      = var.kube_version
   vnet_subnet_id            = var.subnet
   mode                      = each.value.mode

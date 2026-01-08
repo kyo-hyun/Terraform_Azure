@@ -1,60 +1,98 @@
 locals {
     lb_list = {
-        # "lb-test" = {
-        #     resource_group = "khkim_rg"
-        #     location       = "koreacentral"
-        #     public_type    = true
-        #     sku            = "Standard"
+        "hub-n-ids-untrust-lb" = {
+            resource_group = "Hub_rg"
+            location       = "koreacentral"
+            public_type    = false
+            sku            = "Standard"
 
-        #     frontend_ip    = {
-        #         public_ip  = "PIP-LB"
-        #         # vnet       = "vnet-khkim"
-        #         # subnet     = "lb-subnet"
-        #         # private_ip = "10.0.0.69"
-        #     }
+            frontend_ip    = {
+                vnet       = "hub-vnet"
+                subnet     = "n-ids-untrust-snet"
+                private_ip = "10.0.0.36"
+            }
 
-        #     backend_pool = {
-        #         "test-backend-pool" = {
-        #             backend   = [""]
-        #         }
+            backend_pool = {
+                "n-ids-untrust-pool" = {
+                    backend = [
+                      { name = "hub-n-ids1-vm", nic_type = "primary" },
+                      { name = "hub-n-ids2-vm", nic_type = "primary" }
+                    ]
+                }
+            }
 
-        #         "test-backend-pool2" = {
-        #             backend   = [""]
-        #         }
-        #     }
+            lb_rule = {
+                "nids-ha-rule" = {
+                    protocol      = "All"
+                    frontend_port = 0
+                    backend_port  = 0
+                    backend_pool  = "n-ids-untrust-pool"
+                    health_probe  = "nids-health-probe"
+                }
+            }
 
-        #     lb_rule = {
-        #         "test-rule" = {
-        #             protocol      = "Tcp"
-        #             frontend_port = 80
-        #             backend_port  = 80
-        #             backend_pool  = "test-backend-pool"
-        #             health_probe  = "test-health-probe"
-        #         }
+            health_probe = {
+                "nids-health-probe" = {
+                    protocol            = "Http"
+                    port                = 80
+                    request_path        = "/"
+                    interval_in_seconds = 5
+                    number_of_probes    = 2
+                }
+            }
 
-        #         "test-rule2" = {
-        #             protocol      = "Tcp"
-        #             frontend_port = 800
-        #             backend_port  = 800
-        #             backend_pool  = "test-backend-pool2"
-        #             health_probe  = "test-health-probe"
-        #         }
-        #     }
+            tags = {
+                Env = "Hub"
+                Role = "Inbound-LB"
+            }
+        }
 
-        #     health_probe = {
-        #         "test-health-probe" = {
-        #             protocol            = "Http"
-        #             port                = 80
-        #             request_path        = "/"
-        #             interval_in_seconds = 5
-        #             number_of_probes    = 2
-        #         }
-        #     }
+        "hub-n-ids-trust-lb" = {
+            resource_group = "Hub_rg"
+            location       = "koreacentral"
+            public_type    = false
+            sku            = "Standard"
 
-        #     tags = {
-        #         소유자 = "김교현"
-        #     }
-        # }
+            frontend_ip    = {
+                vnet       = "hub-vnet"
+                subnet     = "n-ids-trust-snet"
+                private_ip = "10.0.0.52"
+            }
+
+            backend_pool = {
+                "n-ids-trust-pool" = {
+                    backend = [
+                      { name = "hub-n-ids1-vm", nic_type = "secondary" },
+                      { name = "hub-n-ids2-vm", nic_type = "secondary" }
+                    ]
+                }
+            }
+
+            lb_rule = {
+                "nids-ha-rule" = {
+                    protocol      = "All"
+                    frontend_port = 0
+                    backend_port  = 0
+                    backend_pool  = "n-ids-trust-pool"
+                    health_probe  = "nids-health-probe"
+                }
+            }
+
+            health_probe = {
+                "nids-health-probe" = {
+                    protocol            = "Http"
+                    port                = 80
+                    request_path        = "/"
+                    interval_in_seconds = 5
+                    number_of_probes    = 2
+                }
+            }
+
+            tags = {
+                Env = "Hub"
+                Role = "Outbound-LB"
+            }
+        }
     }
 }
 
@@ -66,18 +104,25 @@ module "LB" {
     public_type     = each.value.public_type
     frontend_ip     = {
         public_ip   = lookup(each.value.frontend_ip, "public_ip", null) != null ? module.pip[each.value.frontend_ip.public_ip].get_pip_id : null
-        subnet      = lookup(each.value.frontend_ip, "subnet", null) != null ? module.vnet[each.value.frontend_ip.vnet].get_subnet_id[each.value.subnet] : null
+        subnet      = lookup(each.value.frontend_ip, "subnet", null) != null ? module.vnet[each.value.frontend_ip.vnet].get_subnet_id[each.value.frontend_ip.subnet] : null
         private_ip  = lookup(each.value.frontend_ip, "private_ip", null) != null ? each.value.frontend_ip.private_ip : null
     }
     location        = each.value.location
     sku             = each.value.sku
     health_probe    = each.value.health_probe
     lb_rule         = each.value.lb_rule
-    backend_pool    = [
-        for backend_key, backend_value in each.value.backend_pool : {
-            backend_pool_name = backend_key
-            backend_pool      = { for backend in backend_value.backend : backend => try(module.azure_vm[backend].get_nic_id,backend) }
+    backend_pool = [
+      for pool_name, pool_content in each.value.backend_pool : {
+        backend_pool_name = pool_name
+        backend_pool = {
+          for target in pool_content.backend :
+            target.name => {
+              id   = try(module.azure_vm[target.name].nic_ids[target.nic_type], module.azure_vm[target.name].get_nic_id)
+              type = target.nic_type
+            }
         }
+      }
     ]
+
     tags            = each.value.tags
 }

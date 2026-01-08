@@ -1,111 +1,136 @@
 locals {
     AGW_List = {
-        # "agw" = {
-        #     rg                      = "khkim_rg"
-        #     location                = "koreacentral"
-        #     #identity_ids            = [""]
-        #     vnet                    = "Hub-vnet"
-        #     subnet                  = "agw-subnet"
-        #     public_ip               = "PIP-LB"
-        #     private_ip              = "10.0.5.173"
+        "hub-app-gw" = {
+            rg                      = "Hub_rg"
+            location                = "koreacentral"
+            vnet                    = "hub-vnet"
+            subnet                  = "agw-snet"
+            public_ip               = "PIP-AGW"
+            private_ip              = "10.0.0.4"
 
-        #     ssl_policy = {
-        #       policy_type          = "CustomV2"
-        #       min_protocol_version = "TLSv1_2"
-        #       cipher_suites = [
-        #         "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
-        #         "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
-        #         "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
-        #         "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
-        #       ]
-        #     }
+            ssl_policy = {
+              policy_type          = "CustomV2"
+              min_protocol_version = "TLSv1_2"
+              cipher_suites = [
+                "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
+                "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
+                "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+                "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
+              ]
+            }
 
-        #     sku = {
-        #         name     = "Standard_v2"
-        #         tier     = "Standard_v2"
-        #         capacity = 1
-        #     }
+            sku = {
+                name     = "Standard_v2"
+                tier     = "Standard_v2"
+                capacity = 1
+            }
 
-        #     # autoscale_configuration = {
-        #     #   min_capacity = 1
-        #     #   max_capacity = 15
-        #     # }
+            ssl_certificates = [
+              {
+                name                = "spoke_ssl_cert"
+                key_vault_secret_id = null
+                password            = "password123"
+                data                = filebase64("./ssl/spoke-web-auth.pfx")
+              }
+            ]
 
-        #     ssl_certificates = [
-        #     #   {
-        #     #     name                = "khkim-test"
-        #     #     key_vault_secret_id = null
-        #     #     password            = "test123"
-        #     #     data                = filebase64("./ssl/server.pfx")
-        #     #   }
-        #     ]
+            backend_address_pools = [
+                {
+                  name         = "backendpool-spoke1"
+                  ip_addresses = ["10.0.0.164"]
+                },
+                {
+                  name         = "backendpool-spoke2"
+                  ip_addresses = ["11.0.0.36"]
+                }
+            ]
 
-        #     backend_address_pools = [
-        #         {
-        #           name         = "backendpool-khkim"
-        #           ip_addresses = ["10.0.7.4"]
-        #         }
-        #     ]
+            backend_http_settings = [
+              {
+                name                  = "backendsettings-spoke1"
+                cookie_based_affinity = "Disabled"
+                path                  = "/"
+                port                  = 80
+                enable_https          = false
+                request_timeout       = 20
+                probe_name            = "healthprobe-spoke1"
+              },
+              {
+                name                  = "backendsettings-spoke2"
+                cookie_based_affinity = "Disabled"
+                path                  = "/"
+                port                  = 80
+                enable_https          = false
+                request_timeout       = 20
+                probe_name            = "healthprobe-spoke2"
+              }
+            ]
 
-        #     backend_http_settings = [
-        #       {
-        #         name                  = "backendsettings-khkim"
-        #         cookie_based_affinity = "Disabled"
-        #         path                  = "/"
-        #         port                  = 80
-        #         enable_https          = false
-        #         request_timeout       = 20
-        #         probe_name            = "healthprobe-khkim"
-        #       }
-        #     ]
+            listeners = [
+              {
+                name                 = "listener-spoke1-https"
+                host_name            = "www.spoke1.com"
+                ssl_certificate_name = "spoke_ssl_cert"
+                frontend_ip_type     = "Public"
+                port                 = 443
+              },
+              {
+                name                 = "listener-spoke2-https"
+                host_name            = "www.spoke2.com"
+                ssl_certificate_name = "spoke_ssl_cert"
+                frontend_ip_type     = "Public"
+                port                 = 443
+              }
+            ]
 
-        #     listeners = [
-        #       {
-        #         name                 = "listener-khkim-http"
-        #         frontend_ip_type     = "public"
-        #         port                 = 80
-        #       }
-        #       # {
-        #       #   name                 = "listener-khkim-https"
-        #       #   host_name            = "www.khkim.com"
-        #       #   ssl_certificate_name = "khkim-test"
-        #       #   frontend_ip_type     = "private"
-        #       #   port                 = 443
-        #       # }
-        #     ]
+            request_routing_rules = [
+              {
+                name                        = "routingrule-spoke1"
+                rule_type                   = "Basic"
+                listener_name               = "listener-spoke1-https"
+                backend_address_pool_name   = "backendpool-spoke1"
+                backend_http_settings_name  = "backendsettings-spoke1"
+                priority                    = 100
+              },
+              {
+                name                        = "routingrule-spoke2"
+                rule_type                   = "Basic"
+                listener_name               = "listener-spoke2-https"
+                backend_address_pool_name   = "backendpool-spoke2"
+                backend_http_settings_name  = "backendsettings-spoke2"
+                priority                    = 200
+              }
+            ]
 
-        #     request_routing_rules = [
-        #       {
-        #         name                        = "routingrule-khkim"
-        #         rule_type                   = "Basic"
-        #         listener_name               = "listener-khkim-http"
-        #         backend_address_pool_name   = "backendpool-khkim"
-        #         backend_http_settings_name  = "backendsettings-khkim"
-        #         priority                    = 120
-        #       }
-        #     ]
+            redirect_configuration = [
 
-        #     redirect_configuration = [
+            ]
 
-        #     ]
-
-        #     health_probes = [
-        #       {
-        #         name                  = "healthprobe-khkim"
-        #         #host                  = "www.khkim.com"
-        #         interval              = 60
-        #         path                  = "/sse"
-        #         port                  = 3000
-        #         timeout               = 60
-        #         unhealthy_threshold   = 3
-        #         status_codes          = ["200-399"]
-        #         #backend_setting       = ["backendsettings-khkim"]
-        #       }
-        #     ]
-
-        #     # waf_policy_id = ""
-            
-        # }
+            health_probes = [
+              {
+                name                  = "healthprobe-spoke1"
+                host                  = "www.spoke1.com"
+                interval              = 60
+                path                  = "/"
+                port                  = 80
+                timeout               = 60
+                unhealthy_threshold   = 3
+                status_codes          = ["200"]
+                backend_setting       = ["backendsettings-spoke1"]
+              },
+              {
+                name                  = "healthprobe-spoke2"
+                host                  = "www.spoke2.com"
+                interval              = 60
+                path                  = "/"
+                port                  = 80
+                timeout               = 60
+                unhealthy_threshold   = 3
+                status_codes          = ["200"]
+                backend_setting       = ["backendsettings-spoke2"]
+              }
+            ]   
+        }
     }
 }
 

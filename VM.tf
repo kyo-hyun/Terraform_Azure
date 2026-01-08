@@ -17,17 +17,25 @@ locals {
   }
 
   vm_list = {
-    "n-ids1" = {
+    "hub-n-ids1-vm" = {
       rg                  = "Hub_rg"
       location            = "koreacentral"
       vnet                = "hub-vnet"
       subnet              = "n-ids-untrust-snet"
       ip_address          = "10.0.0.37"
-      size                = "Standard_F2s_v2"
+      public_ip           = "PIP-n-ids-1-pip"
+      size                = "Standard_F4s_v2"
       os_disk_type        = "Standard_LRS"
       OsType              = "ubuntu"
       OsImage             = "22_04-lts"
+      ip_forwarding       = true
       os_disk_size        = 32
+      script              = "iptables.sh"
+
+      secondary_nic       = {
+        subnet            = "n-ids-trust-snet"
+        ip_address        = "10.0.0.55"
+      }
 
       data_disk           = {
 
@@ -38,17 +46,25 @@ locals {
       }
     }
 
-    "n-ids2" = {
+    "hub-n-ids2-vm" = {
       rg                  = "Hub_rg"
       location            = "koreacentral"
       vnet                = "hub-vnet"
       subnet              = "n-ids-untrust-snet"
       ip_address          = "10.0.0.38"
-      size                = "Standard_F2s_v2"
+      public_ip           = "PIP-n-ids-2-pip"
+      size                = "Standard_F4s_v2"
       os_disk_type        = "Standard_LRS"
       OsType              = "ubuntu"
       OsImage             = "22_04-lts"
+      ip_forwarding       = true
       os_disk_size        = 32
+      script              = "iptables.sh"
+
+      secondary_nic       = {
+        subnet            = "n-ids-trust-snet"
+        ip_address        = "10.0.0.56"
+      }
 
       data_disk           = {
 
@@ -59,7 +75,7 @@ locals {
       }
     }
 
-    "waf1" = {
+    "hub-waf1-vm" = {
       rg                  = "Hub_rg"
       location            = "koreacentral"
       vnet                = "hub-vnet"
@@ -81,7 +97,7 @@ locals {
       }
     }
 
-    "waf2" = {
+    "hub-waf2-vm" = {
       rg                  = "Hub_rg"
       location            = "koreacentral"
       vnet                = "hub-vnet"
@@ -101,11 +117,33 @@ locals {
         Env = "Hub"
       }
     }
+
+    "hub-mgmt-vm" = {
+      rg                  = "Hub_rg"
+      location            = "koreacentral"
+      vnet                = "hub-vnet"
+      subnet              = "mgmt-snet"
+      ip_address          = "10.0.0.84"
+      size                = "Standard_F2s_v2"
+      os_disk_type        = "Standard_LRS"
+      OsType              = "ubuntu"
+      OsImage             = "22_04-lts"
+      os_disk_size        = 32
+
+      data_disk           = {
+
+      }
+
+      tags = {
+        Env = "Hub"
+        role = "mgmt"
+      }
+    }
   }
 }
 
 module "azure_vm" {
-  source              = "./module/VM/"
+  source              = "./module/VM"
   for_each            = local.vm_list
   name                = each.key
   VM_Type             = try(each.value.VM_Type,"new")
@@ -117,6 +155,10 @@ module "azure_vm" {
   sku                 = try(each.value.OsImage,null)
   subnet              = module.vnet[each.value.vnet].get_subnet_id[each.value.subnet]
   ip_address          = each.value.ip_address
+  secondary_nic       = lookup(each.value, "secondary_nic", null) != null ? {
+                          subnet     = module.vnet[each.value.vnet].get_subnet_id[each.value.secondary_nic.subnet]
+                          ip_address = each.value.secondary_nic.ip_address
+                        } : null
   public_ip           = try(module.pip[each.value.public_ip].get_pip_id,null)
   nsg_id              = try(module.NSG[each.value.nsg].get_nsg_id,null)
   nsg                 = try(each.value.nsg,null)

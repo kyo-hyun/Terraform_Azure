@@ -11,19 +11,19 @@ locals {
           access                     = "Allow"
           protocol                   = "Tcp"
           source_port_range          = "*"
-          destination_port_range     = ["3389","80"]
+          destination_port_range     = ["80","443"]
           source_address_prefixes    = ["*"]
           destination_address_prefix = "*"
         }
 
-        "inbound-deny-all" = {
-          priority                   = 4096
+        "inbound-allow-gw-manager" = {
+          priority                   = 200
           direction                  = "Inbound"
-          access                     = "Deny"
+          access                     = "Allow"
           protocol                   = "Tcp"
           source_port_range          = "*"
-          destination_port_range     = ["*"]
-          source_address_prefixes    = ["0.0.0.0/0"]
+          destination_port_range     = ["65200-65535"]
+          source_address_prefixes    = ["*"]
           destination_address_prefix = "*"
         }
       }
@@ -37,6 +37,17 @@ locals {
       location       = "koreacentral"
 
       nsg_rule = {
+        "inbound-allow-home" = {
+          priority                   = 1000
+          direction                  = "Inbound"
+          access                     = "Allow"
+          protocol                   = "Tcp"
+          source_port_range          = "*"
+          destination_port_range     = ["22"]
+          source_address_prefixes    = ["218.48.21.223"]
+          destination_address_prefix = "*"
+        }
+
         "inbound-allow-agw" = {
           priority                   = 100
           direction                  = "Inbound"
@@ -45,17 +56,6 @@ locals {
           source_port_range          = "*"
           destination_port_range     = ["80"]
           source_address_prefixes    = ["10.0.0.0/27"]
-          destination_address_prefix = "*"
-        }
-
-        "inbound-deny-all" = {
-          priority                   = 4096
-          direction                  = "Inbound"
-          access                     = "Deny"
-          protocol                   = "Tcp"
-          source_port_range          = "*"
-          destination_port_range     = ["*"]
-          source_address_prefixes    = ["0.0.0.0/0"]
           destination_address_prefix = "*"
         }
       }
@@ -69,27 +69,7 @@ locals {
       location       = "koreacentral"
 
       nsg_rule = {
-        "outbound-allow-all" = {
-          priority                   = 100
-          direction                  = "Outbound"
-          access                     = "Allow"
-          protocol                   = "Tcp"
-          source_port_range          = "*"
-          destination_port_range     = ["*"]
-          source_address_prefixes    = ["*"]
-          destination_address_prefix = "*"
-        }
 
-        "inbound-deny-all" = {
-          priority                   = 4096
-          direction                  = "Inbound"
-          access                     = "Deny"
-          protocol                   = "Tcp"
-          source_port_range          = "*"
-          destination_port_range     = ["*"]
-          source_address_prefixes    = ["0.0.0.0/0"]
-          destination_address_prefix = "*"
-        }
       }
       tags = {
         Env = "Hub"
@@ -109,17 +89,6 @@ locals {
           source_port_range          = "*"
           destination_port_range     = ["80"]
           source_address_prefixes    = ["10.0.0.0/27"]
-          destination_address_prefix = "*"
-        }
-
-        "inbound-deny-all" = {
-          priority                   = 4096
-          direction                  = "Inbound"
-          access                     = "Deny"
-          protocol                   = "Tcp"
-          source_port_range          = "*"
-          destination_port_range     = ["*"]
-          source_address_prefixes    = ["0.0.0.0/0"]
           destination_address_prefix = "*"
         }
       }
@@ -155,16 +124,6 @@ locals {
           destination_address_prefix = "*"
         }
 
-        "inbound-deny-all" = {
-          priority                   = 4096
-          direction                  = "Inbound"
-          access                     = "Deny"
-          protocol                   = "Tcp"
-          source_port_range          = "*"
-          destination_port_range     = ["*"]
-          source_address_prefixes    = ["0.0.0.0/0"]
-          destination_address_prefix = "*"
-        }
       }
 
       tags = {
@@ -172,7 +131,7 @@ locals {
       }
     }
 
-    "spoke1-aks-lb-sent-nsg" = {
+    "spoke1-aks-lb-snet-nsg" = {
       resource_group = "spoke1_rg"
       location       = "koreacentral"
 
@@ -187,17 +146,6 @@ locals {
           source_address_prefixes    = ["10.0.0.0/27"]
           destination_address_prefix = "*"
         }
-
-        "inbound-deny-all" = {
-          priority                   = 4096
-          direction                  = "Inbound"
-          access                     = "Deny"
-          protocol                   = "Tcp"
-          source_port_range          = "*"
-          destination_port_range     = ["*"]
-          source_address_prefixes    = ["0.0.0.0/0"]
-          destination_address_prefix = "*"
-        }
       }
 
       tags = {
@@ -205,7 +153,7 @@ locals {
       }
     }
 
-    "spoke1-aks-sent-nsg" = {
+    "spoke1-aks-snet-nsg" = {
       resource_group = "spoke1_rg"
       location       = "koreacentral"
 
@@ -220,17 +168,6 @@ locals {
           source_address_prefixes    = ["10.0.0.80/28"]
           destination_address_prefix = "*"
         }
-
-        "inbound-deny-all" = {
-          priority                   = 4096
-          direction                  = "Inbound"
-          access                     = "Deny"
-          protocol                   = "Tcp"
-          source_port_range          = "*"
-          destination_port_range     = ["*"]
-          source_address_prefixes    = ["0.0.0.0/0"]
-          destination_address_prefix = "*"
-        }
       }
 
       tags = {
@@ -238,7 +175,7 @@ locals {
       }
     }
 
-    "spoke1-pep-sent-nsg" = {
+    "spoke1-pep-snet-nsg" = {
       resource_group = "spoke1_rg"
       location       = "koreacentral"
 
@@ -253,17 +190,6 @@ locals {
           source_address_prefixes    = ["10.0.0.128/27"]
           destination_address_prefix = "*"
         }
-
-        "inbound-deny-all" = {
-          priority                   = 4096
-          direction                  = "Inbound"
-          access                     = "Deny"
-          protocol                   = "Tcp"
-          source_port_range          = "*"
-          destination_port_range     = ["*"]
-          source_address_prefixes    = ["0.0.0.0/0"]
-          destination_address_prefix = "*"
-        }
       }
 
       tags = {
@@ -271,7 +197,7 @@ locals {
       }
     }
 
-    "spoke2-aks-lb-sent-nsg" = {
+    "spoke2-aks-lb-snet-nsg" = {
       resource_group = "spoke2_rg"
       location       = "koreacentral"
 
@@ -286,17 +212,6 @@ locals {
           source_address_prefixes    = ["10.0.0.0/27"]
           destination_address_prefix = "*"
         }
-
-        "inbound-deny-all" = {
-          priority                   = 4096
-          direction                  = "Inbound"
-          access                     = "Deny"
-          protocol                   = "Tcp"
-          source_port_range          = "*"
-          destination_port_range     = ["*"]
-          source_address_prefixes    = ["0.0.0.0/0"]
-          destination_address_prefix = "*"
-        }
       }
 
       tags = {
@@ -304,7 +219,7 @@ locals {
       }
     }
 
-    "spoke2-aks-sent-nsg" = {
+    "spoke2-aks-snet-nsg" = {
       resource_group = "spoke2_rg"
       location       = "koreacentral"
 
@@ -319,17 +234,6 @@ locals {
           source_address_prefixes    = ["10.0.0.80/28"]
           destination_address_prefix = "*"
         }
-
-        "inbound-deny-all" = {
-          priority                   = 4096
-          direction                  = "Inbound"
-          access                     = "Deny"
-          protocol                   = "Tcp"
-          source_port_range          = "*"
-          destination_port_range     = ["*"]
-          source_address_prefixes    = ["0.0.0.0/0"]
-          destination_address_prefix = "*"
-        }
       }
 
       tags = {
@@ -337,7 +241,7 @@ locals {
       }
     }
 
-    "spoke2-pep-sent-nsg" = {
+    "spoke2-pep-snet-nsg" = {
       resource_group = "spoke2_rg"
       location       = "koreacentral"
 

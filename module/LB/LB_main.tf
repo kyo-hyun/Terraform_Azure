@@ -1,17 +1,17 @@
 locals {
   nic_pool = flatten([
     for p in var.backend_pool : [
-      for vm, nic in p.backend_pool : {
+      for vm_name, nic_info in p.backend_pool : {
         pool_name = p.backend_pool_name
-        nic_id    = nic
-        vm        = vm
+        nic_id    = nic_info.id
+        suffix    = nic_info.type == "secondary" ? "-secondary" : ""
+        vm        = vm_name
       }
     ]
   ])
 
   nic_pool_map = {
-    for p in local.nic_pool :
-    "${p.pool_name}__${p.vm}" => p
+    for p in local.nic_pool : "${p.pool_name}__${p.vm}" => p
   }
 }
 
@@ -39,12 +39,11 @@ resource "azurerm_lb_backend_address_pool" "backend_pool" {
   name            = each.key
   loadbalancer_id = azurerm_lb.lb.id
 }
-
-# attach NIC to Backend pool
+# 백엔드 풀 연결 리소스 수정
 resource "azurerm_network_interface_backend_address_pool_association" "nic_assoc" {
   for_each                = local.nic_pool_map
   network_interface_id    = each.value.nic_id
-  ip_configuration_name   = "Ipconfiguration-${each.value.vm}"
+  ip_configuration_name   = "Ipconfiguration${each.value.suffix}-${each.value.vm}"
   backend_address_pool_id = azurerm_lb_backend_address_pool.backend_pool[each.value.pool_name].id
 }
 

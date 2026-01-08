@@ -1,11 +1,17 @@
 locals {
   vnet_peerings = {
-    # "peer-hub-spokeA" = {
-    #     local_vnet_rg   = "khkim_rg"
-    #     local_vnet      = "vnet-khkim-hub"
-    #     remote_vnet_rg  = "khkim_rg"
-    #     remote_vnet     = "remote-vnet"
-    # }
+    "peer-hub-spoke1" = {
+        local_vnet_rg   = "Hub_rg"
+        local_vnet      = "hub-vnet"
+        remote_vnet_rg  = "Spoke1_rg"
+        remote_vnet     = "spoke1-vnet"
+    }
+    "peer-hub-spoke2" = {
+        local_vnet_rg   = "Hub_rg"
+        local_vnet      = "hub-vnet"
+        remote_vnet_rg  = "Spoke2_rg"
+        remote_vnet     = "spoke2-vnet"
+    }
   }
 }
 

@@ -26,14 +26,17 @@ variable "https_traffic_only_enabled" {
     default = null
 }
 
-# variable "blob_delete_days" {
-#     default = null
-# }
+variable "file_shares" {
+  type = map(object({
+    quota = number
+  }))
+  default = {}
+}
 
-# variable "container_delete_days" {
-#     default = null
-# }
+variable "pe_subnet_id" {
+  type = string
+}
 
-# variable "file_share_delete_days" {
-#     default = null
-# }
+variable "file_share_dns_zone" {
+  type = string
+}

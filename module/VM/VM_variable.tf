@@ -26,6 +26,10 @@ variable "os_image" {
     default = null
 }
 
+variable "secondary_nic" {
+    default = null
+}
+
 variable "osdisk_size" {
     default = null
 }
